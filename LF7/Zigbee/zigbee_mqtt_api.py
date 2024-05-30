@@ -8,7 +8,7 @@ Lizenz: GPL-3.0, GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007
         of this license document, but changing it is not allowed.
 Sprachen: python
 Datum: 30.05.2024
-Module/Abhängigkeiten/dependencies:
+Module/Abhängigkeiten:
 """
 import time
 import paho.mqtt.client as mqtt
@@ -73,11 +73,10 @@ def domi_mqtt_sub():
             print(f"Failed to connect to MQTT Broker: {e}")
             print("Attempting to reconnect in 5 seconds...")
             time.sleep(5)
-
     obj_client.loop_forever()  # Endlosschleife
 
 
-def run():
+def main():  # Main Funktion
     try:
         domi_mqtt_sub()
     except KeyboardInterrupt:
@@ -85,4 +84,4 @@ def run():
 
 
 if __name__ == '__main__':
-    run()
+    main()
