@@ -1,3 +1,15 @@
+"""
+Titel: Roentgeraum_Projekt
+Organisation: BkGuT
+Ersteller: Dan, Domi FISI-24
+Lizenz: GPL-3.0, GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007
+        Copyright (C) 2007 Free Software Foundation, Inc. <https://fsf.org/>
+        Everyone is permitted to copy and distribute verbatim copies
+        of this license document, but changing it is not allowed.
+Sprachen: python
+Datum: 30.05.2024
+Module/Abhängigkeiten/dependencies:
+"""
 import time
 import paho.mqtt.client as mqtt
 import requests
@@ -8,12 +20,12 @@ port = 1883
 topic = "zigbee/lamp"
 client_id = "Lampe_Pub_Sub"
 
-# Zigbee-Config
+# Zigbee-Config <https://dresden-elektronik.github.io/deconz-rest-doc/getting_started/>
 deconz_api_url = "http://[zigbee_gateway_ip]:[port]/api/[your_api_key]"
 lamp_id = "1"
 
 
-# Zigbee
+# Zigbee Lichtkontrolle <https://dresden-elektronik.github.io/deconz-rest-doc/endpoints/lights/>
 def control_lamp(turn_on):
     state = "on" if turn_on else "off"
     url = f"{deconz_api_url}/lights/{lamp_id}/state"
@@ -29,7 +41,7 @@ def control_lamp(turn_on):
 
 
 # MQTT
-def domi_mqtt():
+def domi_mqtt_sub():
     def on_connect(client, rc):
         print("Connected to MQTT broker with result code " + str(rc))
         client.subscribe(topic)
@@ -67,7 +79,7 @@ def domi_mqtt():
 
 def run():
     try:
-        domi_mqtt()
+        domi_mqtt_sub()
     except KeyboardInterrupt:
         print("Program terminated by user.")
 
