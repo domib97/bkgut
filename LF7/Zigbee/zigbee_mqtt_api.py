@@ -51,7 +51,16 @@ def domi_mqtt():
     obj_client.on_connect = on_connect
     obj_client.on_message = on_message
 
-    obj_client.connect(broker, port, 60)  # Verbindung zum Broker
+    # Verbindungsversuch zum Broker
+    while True:
+        try:
+            obj_client.connect(broker, port, 60)
+            print("Connected to MQTT Broker!\nWaiting for Data:\n")
+            break
+        except Exception as e:
+            print(f"Failed to connect to MQTT Broker: {e}")
+            print("Attempting to reconnect in 5 seconds...")
+            time.sleep(5)
 
     obj_client.loop_forever()  # Endlosschleife
 
