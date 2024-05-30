@@ -53,7 +53,7 @@ def run():
 
         client.connect(broker, port, 60)  # Connect to the MQTT broker
 
-        client.loop_forever()  # Blocking call processes network traffic, dispatches callbacks, handles reconnecting
+        client.loop_forever()  # Blocking call processes network traffic, dispatches callbacks, handles reconnecting lol
 
     except KeyboardInterrupt:
         print("Program terminated by user.")
