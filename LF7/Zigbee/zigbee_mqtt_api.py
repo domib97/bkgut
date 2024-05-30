@@ -27,12 +27,18 @@ lamp_id = "1"
 
 # Zigbee Lichtkontrolle <https://dresden-elektronik.github.io/deconz-rest-doc/endpoints/lights/>
 def control_lamp(turn_on):
-    state = "on" if turn_on else "off"
-    url = f"{deconz_api_url}/lights/{lamp_id}/state"
-    data = {"on": turn_on}
+
+    url = f"{deconz_api_url}/lights/{lamp_id}/state" # REST-API URL
+
+    state = "on" if turn_on else "off"  # Zustand
+
+    data = {"on": turn_on}  # JSON Format
+
     try:
+        # Put Request <https://dresden-elektronik.github.io/deconz-rest-doc/getting_started/#turn-light-onoff>
         response = requests.put(url, json=data)
-        if response.status_code == 200:
+
+        if response.status_code == 200:  # HTTP OK
             print(f"Lamp turned {state}")
         else:
             print(f"Failed to turn {state} the lamp: {response.text}")
@@ -58,12 +64,13 @@ def domi_mqtt_sub():
         except Exception as er:
             print(f"Error processing message: {er}")
 
-    obj_client = mqtt.Client()  # Client Objekterstellung
+    # Client Objekterstellung
+    obj_client = mqtt.Client()
 
     obj_client.on_connect = on_connect
     obj_client.on_message = on_message
 
-# Verbindungsversuch zum Broker
+    # Verbindungsversuch zum Broker
     while True:
         try:
             obj_client.connect(broker, port, 60)
@@ -73,10 +80,12 @@ def domi_mqtt_sub():
             print(f"Failed to connect to MQTT Broker: {e}")
             print("Attempting to reconnect in 5 seconds...")
             time.sleep(5)
-    obj_client.loop_forever()  # Endlosschleife
+    # Endlosschleife
+    obj_client.loop_forever()
 
 
-def main():  # Main Funktion
+# Main Funktion
+def main():
     try:
         domi_mqtt_sub()
     except KeyboardInterrupt:
