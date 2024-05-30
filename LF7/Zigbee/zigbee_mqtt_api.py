@@ -6,7 +6,7 @@ Lizenz: GPL-3.0, GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007
         Copyright (C) 2007 Free Software Foundation, Inc. <https://fsf.org/>
         Everyone is permitted to copy and distribute verbatim copies
         of this license document, but changing it is not allowed.
-Sprachen: python
+Sprachen/Protokolle: Python, MQTT, Zigbee, HTTP requests
 Datum: 30.05.2024
 Module/Abhängigkeiten:
 """
@@ -27,13 +27,11 @@ lamp_id = "1"
 
 # Zigbee Lichtkontrolle <https://dresden-elektronik.github.io/deconz-rest-doc/endpoints/lights/>
 def control_lamp(turn_on):
-
-    url = f"{deconz_api_url}/lights/{lamp_id}/state" # REST-API URL
+    url = f"{deconz_api_url}/lights/{lamp_id}/state"  # REST-API URL
 
     state = "on" if turn_on else "off"  # Zustand
 
     data = {"on": turn_on}  # JSON Format
-
     try:
         # Put Request <https://dresden-elektronik.github.io/deconz-rest-doc/getting_started/#turn-light-onoff>
         response = requests.put(url, json=data)
@@ -41,7 +39,7 @@ def control_lamp(turn_on):
         if response.status_code == 200:  # HTTP OK
             print(f"Lamp turned {state}")
         else:
-            print(f"Failed to turn {state} the lamp: {response.text}")
+            print(f"Failed to turn {state} the lamp: {response.text}")  # HTTP ERROR
     except Exception as e:
         print(f"Error controlling the lamp: {e}")
 
