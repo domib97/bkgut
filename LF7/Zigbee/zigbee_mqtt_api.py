@@ -1,5 +1,5 @@
 """
-Titel: Roentgeraum_Projekt
+Titel: Röntgenraum_Projekt
 Organisation: BkGuT
 Ersteller: Dan, Domi FISI-24
 Lizenz: GPL-3.0, GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007
@@ -55,15 +55,15 @@ def domi_mqtt_sub():
                 control_lamp(False)
             else:
                 print(f"Unknown command: {payload}")
-        except Exception as e:
-            print(f"Error processing message: {e}")
+        except Exception as er:
+            print(f"Error processing message: {er}")
 
     obj_client = mqtt.Client()  # Client Objekterstellung
 
     obj_client.on_connect = on_connect
     obj_client.on_message = on_message
 
-    # Verbindungsversuch zum Broker
+# Verbindungsversuch zum Broker
     while True:
         try:
             obj_client.connect(broker, port, 60)
