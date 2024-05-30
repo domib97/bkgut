@@ -50,13 +50,16 @@ def domi_mqtt_sub():
         print("Connected to MQTT broker with result code " + str(rc))
         client.subscribe(topic)
 
-    def on_message(msg):
+    def on_message(msg):  # MQTT Subscriber
         try:
             payload = msg.payload.decode()
-            if payload.lower() == "on":
+
+            if payload.lower() == "on":  # Lampe AN
                 control_lamp(True)
-            elif payload.lower() == "off":
+
+            elif payload.lower() == "off":  # Lampe AUS
                 control_lamp(False)
+
             else:
                 print(f"Unknown command: {payload}")
         except Exception as er:
