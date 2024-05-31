@@ -26,7 +26,7 @@ client_id = "Lampe_Pub_Sub"
 # Zigbee/Deconz-Config
 # <https://dresden-elektronik.github.io/deconz-rest-doc/getting_started/#acquire-an-api-key>
 deconz_api_url = "http://[zigbee_gateway_ip]:[port]/api/[your_api_key]"
-lamp_id = "1"  # <https://dresden-elektronik.github.io/deconz-rest-doc/endpoints/lights/>
+lamp_id = "1"
 
 
 # Lichtkontrolle  control_lamp(True) -> Lampe AN
@@ -35,7 +35,7 @@ def control_lamp(turn_on):
     # Zustand <https://dresden-elektronik.github.io/deconz-rest-doc/endpoints/lights/#set-light-state>
     state = "on" if turn_on else "off"
 
-    # REST-API URL
+    # Set state REST-API URL
     url = f"{deconz_api_url}/lights/{lamp_id}/state"
 
     # Payload-Data im JSON Format
@@ -54,42 +54,31 @@ def control_lamp(turn_on):
 
 
 # MQTT
-def domi_mqtt_sub():
-    def on_connect(client, rc):
-        print("Connected to MQTT broker with result code " + str(rc))
-        client.subscribe(topic)
+def on_connect(client, rc):
+    print("Connected to MQTT broker with result code " + str(rc))
+    client.subscribe(topic)
 
-    # MQTT Subscriber
-    def on_message(msg):
-        try:
-            payload = msg.payload.decode()
 
-            if payload.lower() == "on":
-                control_lamp(True)  # Lampe AN
+# MQTT Subscriber
+def on_message(msg):
+    try:
+        payload = msg.payload.decode()
 
-            elif payload.lower() == "off":
-                control_lamp(False)  # Lampe AUS
+        if payload.lower() == "on":
+            control_lamp(True)  # Lampe AN
+        elif payload.lower() == "off":
+            control_lamp(False)  # Lampe AUS
 
-            else:
-                print(f"Unknown command: {payload}")
-        except Exception as er:
-            print(f"Error processing message: {er}")
+        else:
+            print(f"Unknown command: {payload}")
+    except Exception as er:
+        print(f"Error processing message: {er}")
 
-    def connect_mqtt() -> mqtt_client:
-        # client = mqtt_client.Client(client_id)
-        client = paho.mqtt.client.Client(paho.mqtt.client.CallbackAPIVersion.VERSION1)
-        while True:
-            try:
-                client.connect(broker, port)
-                print("Connected to MQTT Broker!\n")
-                break
-            except Exception as e:
-                print(f"Failed to connect to MQTT Broker: {e}")
-                print("Attempting to reconnect in 5 seconds...\n")
-                time.sleep(5)
-        return client
+
+def connect_mqtt() -> paho.mqtt.client:
 
     # Client Objekterstellung
+    # client = mqtt_client.Client(client_id)
     obj_client = paho.mqtt.client.Client(paho.mqtt.client.CallbackAPIVersion.VERSION1)
 
     obj_client.on_connect = on_connect
@@ -103,16 +92,17 @@ def domi_mqtt_sub():
             break
         except Exception as e:
             print(f"Failed to connect to MQTT Broker: {e}")
-            print("Attempting to reconnect in 5 seconds...")
+            print("Attempting to reconnect in 5 seconds...\n")
             time.sleep(5)
-    # Endlosschleife
-    obj_client.loop_forever()
+    return obj_client
 
 
 # main Funktion
 def main():
     try:
-        domi_mqtt_sub()
+        obj_client = connect_mqtt()
+        # Endlosschleife
+        obj_client.loop_forever()
     except KeyboardInterrupt:
         print("Program terminated by user.")
 
