@@ -14,6 +14,7 @@ import time
 import logging
 import paho.mqtt.client as mqtt_alias
 import requests
+# import json //todo: Helligkeit über JSON dimmbar machen
 
 # Subscriber
 
@@ -29,7 +30,7 @@ logging.basicConfig(level=logging.INFO)
 
 
 # Lichtkontrolle  control_lamp(True) -> Lampe AN ; control_lamp(False) -> Lampe AUS
-def control_lamp(turn_on: bool):
+def control_lamp(turn_on: bool) -> None:
 
     # Zustand <https://dresden-elektronik.github.io/deconz-rest-doc/endpoints/lights/#set-light-state>
     state = "on" if turn_on else "off"
@@ -56,6 +57,7 @@ def control_lamp(turn_on: bool):
 def on_connect(client, userdata, flags, rc, properties):
     if rc == 0:
         logging.info("Connected to MQTT broker with result code " + str(rc))
+        print("\n:-)\n\nConnected to MQTT Broker!\nWaiting for Data:\n.\n.\n.\n")
     else:
         logging.error(f"Connection failed with result code {rc}")
 
@@ -88,7 +90,6 @@ def connect_mqtt() -> mqtt_alias.Client:
         try:
             obj_client.connect(broker, port, 60)
             logging.info("Connected to MQTT Broker!")
-            print("\n:-)\n\nConnected to MQTT Broker!\nWaiting for Data:\n")
             break
         except Exception as e:
             logging.error(f"Failed to connect to MQTT Broker: {e}")
