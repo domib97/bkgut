@@ -42,7 +42,7 @@ def run():
     try:
         client = connect_mqtt()
         subscribe(client)
-        client.loop_forever()
+        client.loop_forever()  # Blocking call processes network traffic, dispatches callbacks, handles reconnecting
     except KeyboardInterrupt:
         print("Program terminated by user.")
 

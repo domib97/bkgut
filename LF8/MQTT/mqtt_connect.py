@@ -9,8 +9,8 @@ client_id = "Etage1_pub"
 
 # Verbindung zum Broker
 def class_connect_mqtt():
-    # client = mqtt_client.Client(client_id)
-    client = mqtt_client.Client(mqtt_client.CallbackAPIVersion.VERSION1)
+    client = mqtt_client.Client()
+    #  client = mqtt_client.Client(mqtt_client.CallbackAPIVersion.VERSION1)
     while True:
         try:
             client.connect(broker, port)
