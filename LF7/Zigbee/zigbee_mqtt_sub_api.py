@@ -1,5 +1,5 @@
 """
-Titel: Röntgenraum_Projekt
+Titel: Röntgenraum_Projekt - Subscriber
 Organisation: BkGuT
 Ersteller: Dan, Domi FISI-24
 Lizenz: GPL-3.0, GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007
@@ -16,8 +16,6 @@ import paho.mqtt.client as mqtt_alias
 import requests
 # import json //todo: Helligkeit über JSON dimmbar machen
 
-# Subscriber
-
 # Constants
 broker = "domipi"
 port = 1883
@@ -29,7 +27,7 @@ deconz_api_url = "http://{zigbee_gateway_ip}:{port}/api/{your_api_key}"
 logging.basicConfig(level=logging.INFO)
 
 
-# Lichtkontrolle  control_lamp(True) -> Lampe AN ; control_lamp(False) -> Lampe AUS
+# Zigbee Lichtkontrolle  control_lamp(True) -> Lampe AN ; control_lamp(False) -> Lampe AUS
 def control_lamp(turn_on: bool) -> None:
 
     # Zustand <https://dresden-elektronik.github.io/deconz-rest-doc/endpoints/lights/#set-light-state>
