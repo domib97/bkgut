@@ -14,12 +14,13 @@ import time
 import paho.mqtt.client as mqtt_alias
 import requests
 
+# Publisher
 
 # MQTT-Config
 broker = "domipi"
 port = 1883
 topic = "zigbee/lamp"
-client_id = "Lampe_Pub_Sub"
+client_id = "Lampe_Pub_Pub"
 
 
 # Zigbee/Deconz-Config
