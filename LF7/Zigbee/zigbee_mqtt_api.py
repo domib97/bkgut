@@ -13,7 +13,6 @@ Module/Abhängigkeiten: <https://github.com/dresden-elektronik/deconz-rest-plugi
 import time
 import paho.mqtt.client as mqtt
 import requests
-
 # import json //todo: Helligkeit über JSON dimmbar machen
 
 
@@ -23,19 +22,25 @@ port = 1883
 topic = "zigbee/lamp"
 client_id = "Lampe_Pub_Sub"
 
-# Zigbee-Config <https://dresden-elektronik.github.io/deconz-rest-doc/getting_started/#acquire-an-api-key>
+
+# Zigbee/Deconz-Config
+# <https://dresden-elektronik.github.io/deconz-rest-doc/getting_started/#acquire-an-api-key>
 deconz_api_url = "http://[zigbee_gateway_ip]:[port]/api/[your_api_key]"
 lamp_id = "1"  # <https://dresden-elektronik.github.io/deconz-rest-doc/endpoints/lights/>
 
 
-# Zigbee Lichtkontrolle
+# Lichtkontrolle  control_lamp(True) -> Lampe AN
 def control_lamp(turn_on):
+
     # Zustand <https://dresden-elektronik.github.io/deconz-rest-doc/endpoints/lights/#set-light-state>
     state = "on" if turn_on else "off"
 
-    url = f"{deconz_api_url}/lights/{lamp_id}/state"  # REST-API URL
+    # REST-API URL
+    url = f"{deconz_api_url}/lights/{lamp_id}/state"
 
-    data = {"on": turn_on}  # JSON Format
+    # Payload-Data im JSON Format
+    data = {"on": turn_on}
+
     try:
         # Put Request <https://dresden-elektronik.github.io/deconz-rest-doc/getting_started/#turn-light-onoff>
         response = requests.put(url, json=data)
@@ -54,15 +59,16 @@ def domi_mqtt_sub():
         print("Connected to MQTT broker with result code " + str(rc))
         client.subscribe(topic)
 
-    def on_message(msg):  # MQTT Subscriber
+    # MQTT Subscriber
+    def on_message(msg):
         try:
             payload = msg.payload.decode()
 
-            if payload.lower() == "on":  # Lampe AN
-                control_lamp(True)
+            if payload.lower() == "on":
+                control_lamp(True)  # Lampe AN
 
-            elif payload.lower() == "off":  # Lampe AUS
-                control_lamp(False)
+            elif payload.lower() == "off":
+                control_lamp(False)  # Lampe AUS
 
             else:
                 print(f"Unknown command: {payload}")
@@ -92,7 +98,7 @@ def domi_mqtt_sub():
 # Main Funktion
 def main():
     try:
-        domi_mqtt_sub()
+        domi_mqtt_sub()  #
     except KeyboardInterrupt:
         print("Program terminated by user.")
 
