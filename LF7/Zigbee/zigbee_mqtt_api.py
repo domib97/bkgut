@@ -11,7 +11,7 @@ Datum: 30.05.2024
 Module/Abhängigkeiten: <https://github.com/dresden-elektronik/deconz-rest-plugin>
 """
 import time
-import paho.mqtt.client as mqtt
+import paho.mqtt.client
 import requests
 # import json //todo: Helligkeit über JSON dimmbar machen
 
@@ -75,8 +75,22 @@ def domi_mqtt_sub():
         except Exception as er:
             print(f"Error processing message: {er}")
 
+    def connect_mqtt() -> mqtt_client:
+        # client = mqtt_client.Client(client_id)
+        client = paho.mqtt.client.Client(paho.mqtt.client.CallbackAPIVersion.VERSION1)
+        while True:
+            try:
+                client.connect(broker, port)
+                print("Connected to MQTT Broker!\n")
+                break
+            except Exception as e:
+                print(f"Failed to connect to MQTT Broker: {e}")
+                print("Attempting to reconnect in 5 seconds...\n")
+                time.sleep(5)
+        return client
+
     # Client Objekterstellung
-    obj_client = mqtt.Client()
+    obj_client = paho.mqtt.client.Client(paho.mqtt.client.CallbackAPIVersion.VERSION1)
 
     obj_client.on_connect = on_connect
     obj_client.on_message = on_message
@@ -95,10 +109,10 @@ def domi_mqtt_sub():
     obj_client.loop_forever()
 
 
-# Main Funktion
+# main Funktion
 def main():
     try:
-        domi_mqtt_sub()  #
+        domi_mqtt_sub()
     except KeyboardInterrupt:
         print("Program terminated by user.")
 
