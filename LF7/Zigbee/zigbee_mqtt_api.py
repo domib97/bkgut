@@ -11,9 +11,8 @@ Datum: 30.05.2024
 Module/Abhängigkeiten: <https://github.com/dresden-elektronik/deconz-rest-plugin>
 """
 import time
-import paho.mqtt.client
+import paho.mqtt.client as mqtt_alias
 import requests
-# import json //todo: Helligkeit über JSON dimmbar machen
 
 
 # MQTT-Config
@@ -29,7 +28,7 @@ deconz_api_url = "http://[zigbee_gateway_ip]:[port]/api/[your_api_key]"
 lamp_id = "1"
 
 
-# Lichtkontrolle  control_lamp(True) -> Lampe AN
+# Lichtkontrolle  control_lamp(True) -> Lampe AN ; control_lamp(False) -> Lampe AUS
 def control_lamp(turn_on):
 
     # Zustand <https://dresden-elektronik.github.io/deconz-rest-doc/endpoints/lights/#set-light-state>
@@ -54,32 +53,30 @@ def control_lamp(turn_on):
 
 
 # MQTT
-def on_connect(client, rc):
+def on_connect(client, userdata, flags, rc, properties):
+    # **No arguments for on_connect!**
     print("Connected to MQTT broker with result code " + str(rc))
-    client.subscribe(topic)
+    client.subscribe(topic)  # Subscribe after connection established
 
 
 # MQTT Subscriber
 def on_message(msg):
     try:
         payload = msg.payload.decode()
-
         if payload.lower() == "on":
             control_lamp(True)  # Lampe AN
         elif payload.lower() == "off":
             control_lamp(False)  # Lampe AUS
-
         else:
             print(f"Unknown command: {payload}")
     except Exception as er:
         print(f"Error processing message: {er}")
 
 
-def connect_mqtt() -> paho.mqtt.client:
+def connect_mqtt() -> mqtt_alias.Client:
 
     # Client Objekterstellung
-    # client = mqtt_client.Client(client_id)
-    obj_client = paho.mqtt.client.Client(paho.mqtt.client.CallbackAPIVersion.VERSION1)
+    obj_client = mqtt_alias.Client(mqtt_alias.CallbackAPIVersion.VERSION2)
 
     obj_client.on_connect = on_connect
     obj_client.on_message = on_message
@@ -100,9 +97,8 @@ def connect_mqtt() -> paho.mqtt.client:
 # main Funktion
 def main():
     try:
-        obj_client = connect_mqtt()
-        # Endlosschleife
-        obj_client.loop_forever()
+        obj_client = connect_mqtt()  # Verbindungsaufbau
+        obj_client.loop_forever()  # Endlosschleife
     except KeyboardInterrupt:
         print("Program terminated by user.")
 
