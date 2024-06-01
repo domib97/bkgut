@@ -33,9 +33,9 @@ def publish(client):
         try:
             temperature_c = sensor.temperature
             humidity = sensor.humidity
-            
-            client.publish(topics[0], temperature_c)
-            client.publish(topics[1], humidity)
+
+            client.publish(temperature_c, topics[0], )
+            client.publish(humidity, topics[1], )
             #print("Temp={0:0.1f}ºC, Humidity={1:0.1f}%".format(temperature_c, humidity))
             time.sleep(3)
         except RuntimeError as error:

@@ -19,7 +19,7 @@ import requests
 # MQTT-Config
 broker = "domipi"
 port = 1883
-# topics = [("greenhouse/2/temp", 0), ("greenhouse/2/hum", 0)]
+topics = [("zigbee/lamp", 0), ("zigbee/door", 0)]
 # topics = ["greenhouse/1/temp", "greenhouse/1/hum"]
 topic = "zigbee/lamp"
 client_id = "Lampe_Pub"
@@ -83,20 +83,29 @@ def on_message(client, userdata, message):
 def publish(client):
     while True:
         try:
+            # query = 'mosquitto_pub -h 192.168.178.26 -m "on" -t zigbee/lamp -d'
             # temperature_c = sensor.temperature
             # humidity = sensor.humidity
+            # state = "on" if turn_on else "off"
+            # turn_on: bool
+            # if turn_on:
+            #    state = "on"
+            # else:
+            #    state = "off"
+            const_off = 'off'
 
-            client.publish(topics[0], temperature_c)
-            # client.publish(topics[1], humidity)
-            # print("Temp={0:0.1f}ºC, Humidity={1:0.1f}%".format(temperature_c, humidity))
+            client.publish(topics[0], 'on')
+            client.publish(topics[1], const_off)
+
+            client.publish()
+            client.publish('off')
+
             time.sleep(3)
         except RuntimeError as error:
-            # Errors happen fairly often, DHT's are hard to read, just keep going
             print(error.args[0])
             time.sleep(1)
             continue
         except Exception as error:
-            # sensor.exit()
             raise error
 
 
