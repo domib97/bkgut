@@ -70,18 +70,11 @@ def publish(client):
             const_off: str = 'off'
 
             flag: bool = False
-            state = const_on if flag else const_off
 
-            blub: int = 0
-
-            if blub == 420:
-                flag = True
+            if flag:  # if flag == True
+                client.publish(topic, const_on)
             else:
-                flag = False
-
-            client.publish(topic, state)
-
-            time.sleep(3)
+                client.publish(topic, const_off)
 
         except RuntimeError as error:
             print(error.args[0])
