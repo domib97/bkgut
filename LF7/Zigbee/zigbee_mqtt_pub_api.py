@@ -20,7 +20,7 @@ import requests
 broker = "domipi"
 port = 1883
 # topics = [("zigbee/lamp", 0), ("zigbee/door", 0)]
-# topics = ["greenhouse/1/temp", "greenhouse/1/hum"]
+topics = ["zigbee/lamp", "greenhouse/1/hum"]
 topic = "zigbee/lamp"
 client_id = "Lampe_Pub"
 
@@ -69,19 +69,16 @@ def publish(client):
             const_on: str = 'on'
             const_off: str = 'off'
 
-            flag: bool = False
+            flag: bool = True
 
             if flag:  # if flag == True
-                client.publish(topic, const_on)
+                client.publish(topics[0], const_on)
+            elif not flag:
+                client.publish(topics[0], const_off)
             else:
-                client.publish(topic, const_off)
-
-        except RuntimeError as error:
-            print(error.args[0])
-            time.sleep(1)
-            continue
-        except Exception as error:
-            raise error
+                return 0
+        finally:
+            return 0
 
 
 def connect_mqtt() -> mqtt_alias.Client:
