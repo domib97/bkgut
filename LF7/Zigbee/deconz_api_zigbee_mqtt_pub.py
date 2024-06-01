@@ -37,23 +37,13 @@ def control_lamp(turn_on):
     # Zustand <https://dresden-elektronik.github.io/deconz-rest-doc/endpoints/lights/#set-light-state>
     state = "on" if turn_on else "off"
 
-    # Set state REST-API URL
-    url = f"{deconz_api_url}/lights/{lamp_id}/state"
+    # 0Set state REST-API URL
+    # url = f"{deconz_api_url}/lights/{lamp_id}/state"
 
     # Payload-Data im JSON Format
-    data = {"on": turn_on}
+    # data = {"on": turn_on}
 
-    try:
-        # Put Request <https://dresden-elektronik.github.io/deconz-rest-doc/getting_started/#turn-light-onoff>
-        response = requests.put(url, json=data)
-
-        if response.status_code == 200:  # HTTP OK
-            print(f"Lamp turned {state}")
-        else:
-            print(f"Failed to turn {state} the lamp: {response.text}")  # HTTP ERROR
-    except Exception as e:
-        print(f"Error controlling the lamp: {e}")
-
+    # response = requests.put(url, json=data)
 
 # MQTT
 def on_connect(client, userdata, flags, rc, properties):
@@ -62,14 +52,20 @@ def on_connect(client, userdata, flags, rc, properties):
     client.subscribe(topic)  # Subscribe after connection established
 
 
+
 # Publisher
 def publish(client):
     while True:
         try:
+            # Lichtkontrolle  control_lamp(True) -> Lampe AN ; control_lamp(False) -> Lampe AUS
+            
+            if ():
+                flag: bool = True
+            elif ():
+                flag: bool = False
+
             const_on: str = 'on'
             const_off: str = 'off'
-
-            flag: bool = True
 
             if flag:  # if flag == True
                 client.publish(topics[0], const_on)
