@@ -19,8 +19,10 @@ import requests
 # MQTT-Config
 broker = "domipi"
 port = 1883
+# topics = [("zigbee/lamp", 0), ("zigbee/door", 0)]
+# topics = ["greenhouse/1/temp", "greenhouse/1/hum"]
 topic = "zigbee/lamp"
-client_id = "Lampe_Pub_Pub"
+client_id = "Lampe_Pub"
 
 
 # Zigbee/Deconz-Config
@@ -60,18 +62,37 @@ def on_connect(client, userdata, flags, rc, properties):
     client.subscribe(topic)  # Subscribe after connection established
 
 
-# MQTT Subscriber
-def on_message(msg):
-    try:
-        payload = msg.payload.decode()
-        if payload.lower() == "on":
-            control_lamp(True)  # Lampe AN
-        elif payload.lower() == "off":
-            control_lamp(False)  # Lampe AUS
-        else:
-            print(f"Unknown command: {payload}")
-    except Exception as er:
-        print(f"Error processing message: {er}")
+# Publisher
+def publish(client):
+    while True:
+        try:
+            # query = 'mosquitto_pub -h 192.168.178.26 -m "on" -t zigbee/lamp -d'
+            # temperature_c = sensor.temperature
+            # humidity = sensor.humidity
+            # state = "on" if turn_on else "off"
+            # turn_on: bool
+            # if turn_on:
+            #    state = "on"
+            # else:
+            #    state = "off"
+            const_on: str = 'on'
+            const_off: str = 'off'
+
+            # the topic to publish to, and the message to publish
+            # client.publish("test/test", "Hello world!")
+
+            client.publish("zigbee/lamp", "on")
+            print("Published on")
+            time.sleep(3)
+            client.publish("zigbee/lamp", "off")
+            print("Published off")
+            time.sleep(3)
+        except RuntimeError as error:
+            print(error.args[0])
+            time.sleep(1)
+            continue
+        except Exception as error:
+            raise error
 
 
 def connect_mqtt() -> mqtt_alias.Client:
@@ -80,13 +101,12 @@ def connect_mqtt() -> mqtt_alias.Client:
     obj_client = mqtt_alias.Client(mqtt_alias.CallbackAPIVersion.VERSION2)
 
     obj_client.on_connect = on_connect
-    obj_client.on_message = on_message
 
     # Verbindungsversuch zum Broker
     while True:
         try:
             obj_client.connect(broker, port, 60)
-            print("Connected to MQTT Broker!\nWaiting for Data:\n")
+            print("Connected to MQTT Broker!\nSending Data:\n")
             break
         except Exception as e:
             print(f"Failed to connect to MQTT Broker: {e}")
@@ -99,6 +119,7 @@ def connect_mqtt() -> mqtt_alias.Client:
 def main():
     try:
         obj_client = connect_mqtt()  # Verbindungsaufbau
+        publish(obj_client)
         obj_client.loop_forever()  # Endlosschleife
     except KeyboardInterrupt:
         print("Program terminated by user.")
