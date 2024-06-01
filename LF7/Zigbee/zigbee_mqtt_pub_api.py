@@ -20,7 +20,7 @@ import requests
 broker = "domipi"
 port = 1883
 # topics = [("zigbee/lamp", 0), ("zigbee/door", 0)]
-# topics = ["greenhouse/1/temp", "greenhouse/1/hum"]
+topics = ["zigbee/lamp", "greenhouse/1/hum"]
 topic = "zigbee/lamp"
 client_id = "Lampe_Pub"
 
@@ -66,33 +66,19 @@ def on_connect(client, userdata, flags, rc, properties):
 def publish(client):
     while True:
         try:
-            # query = 'mosquitto_pub -h 192.168.178.26 -m "on" -t zigbee/lamp -d'
-            # temperature_c = sensor.temperature
-            # humidity = sensor.humidity
-            # state = "on" if turn_on else "off"
-            # turn_on: bool
-            # if turn_on:
-            #    state = "on"
-            # else:
-            #    state = "off"
             const_on: str = 'on'
             const_off: str = 'off'
 
-            # the topic to publish to, and the message to publish
-            # client.publish("test/test", "Hello world!")
+            flag: bool = True
 
-            client.publish("zigbee/lamp", "on")
-            print("Published on")
-            time.sleep(3)
-            client.publish("zigbee/lamp", "off")
-            print("Published off")
-            time.sleep(3)
-        except RuntimeError as error:
-            print(error.args[0])
-            time.sleep(1)
-            continue
-        except Exception as error:
-            raise error
+            if flag:  # if flag == True
+                client.publish(topics[0], const_on)
+            elif not flag:
+                client.publish(topics[0], const_off)
+            else:
+                return 0
+        finally:
+            return 0
 
 
 def connect_mqtt() -> mqtt_alias.Client:
