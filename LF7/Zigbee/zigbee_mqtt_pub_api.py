@@ -66,27 +66,19 @@ def on_connect(client, userdata, flags, rc, properties):
 def publish(client):
     while True:
         try:
-            # query = 'mosquitto_pub -h 192.168.178.26 -m "on" -t zigbee/lamp -d'
-            # temperature_c = sensor.temperature
-            # humidity = sensor.humidity
-            # state = "on" if turn_on else "off"
-            # turn_on: bool
-            # if turn_on:
-            #    state = "on"
-            # else:
-            #    state = "off"
             const_on: str = 'on'
             const_off: str = 'off'
 
-            # the topic to publish to, and the message to publish
-            # client.publish("test/test", "Hello world!")
+            flag: bool = False
+            state = const_on if flag else const_off
 
-            client.publish("zigbee/lamp", "on")
+            client.publish(topic, state)
             print("Published on")
             time.sleep(3)
-            client.publish("zigbee/lamp", "off")
+            client.publish(topic, const_off)
             print("Published off")
             time.sleep(3)
+
         except RuntimeError as error:
             print(error.args[0])
             time.sleep(1)
