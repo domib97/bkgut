@@ -19,8 +19,10 @@ import requests
 # MQTT-Config
 broker = "domipi"
 port = 1883
+# topics = [("greenhouse/2/temp", 0), ("greenhouse/2/hum", 0)]
+# topics = ["greenhouse/1/temp", "greenhouse/1/hum"]
 topic = "zigbee/lamp"
-client_id = "Lampe_Pub_Pub"
+client_id = "Lampe_Pub"
 
 
 # Zigbee/Deconz-Config
@@ -60,18 +62,42 @@ def on_connect(client, userdata, flags, rc, properties):
     client.subscribe(topic)  # Subscribe after connection established
 
 
-# MQTT Subscriber
-def on_message(msg):
+# Subscriber
+def on_message(client, userdata, message):
     try:
-        payload = msg.payload.decode()
+        payload = message.payload.decode()
+
         if payload.lower() == "on":
             control_lamp(True)  # Lampe AN
+
         elif payload.lower() == "off":
             control_lamp(False)  # Lampe AUS
+
         else:
             print(f"Unknown command: {payload}")
     except Exception as er:
         print(f"Error processing message: {er}")
+
+
+# Publisher
+def publish(client):
+    while True:
+        try:
+            # temperature_c = sensor.temperature
+            # humidity = sensor.humidity
+
+            client.publish(topics[0], temperature_c)
+            # client.publish(topics[1], humidity)
+            # print("Temp={0:0.1f}ºC, Humidity={1:0.1f}%".format(temperature_c, humidity))
+            time.sleep(3)
+        except RuntimeError as error:
+            # Errors happen fairly often, DHT's are hard to read, just keep going
+            print(error.args[0])
+            time.sleep(1)
+            continue
+        except Exception as error:
+            # sensor.exit()
+            raise error
 
 
 def connect_mqtt() -> mqtt_alias.Client:
@@ -86,7 +112,7 @@ def connect_mqtt() -> mqtt_alias.Client:
     while True:
         try:
             obj_client.connect(broker, port, 60)
-            print("Connected to MQTT Broker!\nWaiting for Data:\n")
+            print("Connected to MQTT Broker!\nSending Data:\n")
             break
         except Exception as e:
             print(f"Failed to connect to MQTT Broker: {e}")
@@ -99,6 +125,7 @@ def connect_mqtt() -> mqtt_alias.Client:
 def main():
     try:
         obj_client = connect_mqtt()  # Verbindungsaufbau
+        publish(obj_client)
         obj_client.loop_forever()  # Endlosschleife
     except KeyboardInterrupt:
         print("Program terminated by user.")
