@@ -1,5 +1,5 @@
 """
-Titel: Röntgenraum_Projekt
+Titel: Röntgenraum_Projekt - Subscriber
 Organisation: BkGuT
 Ersteller: Dan, Domi FISI-24
 Lizenz: GPL-3.0, GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007
@@ -16,20 +16,23 @@ import paho.mqtt.client as mqtt_alias
 import requests
 # import json //todo: Helligkeit über JSON dimmbar machen
 
-# Subscriber
-
-# Constants
+# Konstanten
+# Zigbee:
+# <http://192.168.178.109/pwa/debug-api.html?_v=8c5c21ec4bb8f073a864fd191077923cfa03c762,5,6,17&gwid=00212EFFFF0E474D>
+# -> 192.168.178.109/api/7B6BEDD305/lights/2
 broker = "domipi"
 port = 1883
 topic = "zigbee/lamp"
-lamp_id = "1"
-deconz_api_url = "http://{zigbee_gateway_ip}:{port}/api/{your_api_key}"
+lamp_id = "2"
+deconz_api_url = "http://192.168.178.109/api/7B6BEDD305"
+# deconz_api_url = "http://{zigbee_gateway_ip}:{port}/api/{your_api_key}"
+
 
 # Logging
 logging.basicConfig(level=logging.INFO)
 
 
-# Lichtkontrolle  control_lamp(True) -> Lampe AN ; control_lamp(False) -> Lampe AUS
+# Zigbee Lichtkontrolle  control_lamp(True) -> Lampe AN ; control_lamp(False) -> Lampe AUS
 def control_lamp(turn_on: bool) -> None:
 
     # Zustand <https://dresden-elektronik.github.io/deconz-rest-doc/endpoints/lights/#set-light-state>
@@ -64,17 +67,20 @@ def on_connect(client, userdata, flags, rc, properties):
     client.subscribe(topic)  # Subscribe after connection established
 
 
-def on_message(msg):
+def on_message(client, userdata, message):
     try:
-        payload = msg.payload.decode()
+        payload = message.payload.decode()
+
         if payload.lower() == "on":
             control_lamp(True)  # Lampe AN
+
         elif payload.lower() == "off":
             control_lamp(False)  # Lampe AUS
+
         else:
-            logging.warning(f"Unknown command: {payload}")
+            print(f"Unknown command: {payload}")
     except Exception as er:
-        logging.error(f"Error processing message: {e}")
+        print(f"Error processing message: {er}")
 
 
 def connect_mqtt() -> mqtt_alias.Client:
@@ -96,7 +102,7 @@ def connect_mqtt() -> mqtt_alias.Client:
             logging.info("Attempting to reconnect in 5 seconds...")
             time.sleep(5)
     return obj_client
-
+ 
 
 # main Funktion
 def main():
