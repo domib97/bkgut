@@ -32,18 +32,19 @@ lamp_id = "1"
 
 
 # Lichtkontrolle  control_lamp(True) -> Lampe AN ; control_lamp(False) -> Lampe AUS
-def control_lamp(turn_on):
+def control(turn_on: bool, flag: bool) -> None:
 
-    # Zustand <https://dresden-elektronik.github.io/deconz-rest-doc/endpoints/lights/#set-light-state>
     state = "on" if turn_on else "off"
 
-    # 0Set state REST-API URL
-    # url = f"{deconz_api_url}/lights/{lamp_id}/state"
-
+    if state == "on":
+        flag = True
+    elif state == "off":
+        flag = False
     # Payload-Data im JSON Format
     # data = {"on": turn_on}
 
     # response = requests.put(url, json=data)
+
 
 # MQTT
 def on_connect(client, userdata, flags, rc, properties):
@@ -57,12 +58,7 @@ def on_connect(client, userdata, flags, rc, properties):
 def publish(client):
     while True:
         try:
-            # Lichtkontrolle  control_lamp(True) -> Lampe AN ; control_lamp(False) -> Lampe AUS
-            
-            if ():
-                flag: bool = True
-            elif ():
-                flag: bool = False
+            flag: bool = True
 
             const_on: str = 'on'
             const_off: str = 'off'
