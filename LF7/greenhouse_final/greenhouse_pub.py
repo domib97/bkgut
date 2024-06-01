@@ -27,6 +27,7 @@ def connect_mqtt() -> mqtt_client:
             time.sleep(5)
     return client
 
+
 #Publisher
 def publish(client):
     while True:
@@ -36,7 +37,7 @@ def publish(client):
 
             client.publish(temperature_c, topics[0], )
             client.publish(humidity, topics[1], )
-            #print("Temp={0:0.1f}ºC, Humidity={1:0.1f}%".format(temperature_c, humidity))
+            # print("Temp={0:0.1f}ºC, Humidity={1:0.1f}%".format(temperature_c, humidity))
             time.sleep(3)
         except RuntimeError as error:
             # Errors happen fairly often, DHT's are hard to read, just keep going
@@ -54,6 +55,7 @@ def run():
         client.loop_forever()
     except KeyboardInterrupt:
         print("Program terminated by user.")
+
 
 if __name__ == '__main__':
     run()

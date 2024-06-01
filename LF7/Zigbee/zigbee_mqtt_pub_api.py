@@ -19,7 +19,7 @@ import requests
 # MQTT-Config
 broker = "domipi"
 port = 1883
-topics = [("zigbee/lamp", 0), ("zigbee/door", 0)]
+# topics = [("zigbee/lamp", 0), ("zigbee/door", 0)]
 # topics = ["greenhouse/1/temp", "greenhouse/1/hum"]
 topic = "zigbee/lamp"
 client_id = "Lampe_Pub"
@@ -62,23 +62,6 @@ def on_connect(client, userdata, flags, rc, properties):
     client.subscribe(topic)  # Subscribe after connection established
 
 
-# Subscriber
-def on_message(client, userdata, message):
-    try:
-        payload = message.payload.decode()
-
-        if payload.lower() == "on":
-            control_lamp(True)  # Lampe AN
-
-        elif payload.lower() == "off":
-            control_lamp(False)  # Lampe AUS
-
-        else:
-            print(f"Unknown command: {payload}")
-    except Exception as er:
-        print(f"Error processing message: {er}")
-
-
 # Publisher
 def publish(client):
     while True:
@@ -92,14 +75,17 @@ def publish(client):
             #    state = "on"
             # else:
             #    state = "off"
-            const_off = 'off'
+            const_on: str = 'on'
+            const_off: str = 'off'
 
-            client.publish(topics[0], 'on')
-            client.publish(topics[1], const_off)
+            # the topic to publish to, and the message to publish
+            # client.publish("test/test", "Hello world!")
 
-            client.publish()
-            client.publish('off')
-
+            client.publish("zigbee/lamp", "on")
+            print("Published on")
+            time.sleep(3)
+            client.publish("zigbee/lamp", "off")
+            print("Published off")
             time.sleep(3)
         except RuntimeError as error:
             print(error.args[0])
@@ -115,7 +101,6 @@ def connect_mqtt() -> mqtt_alias.Client:
     obj_client = mqtt_alias.Client(mqtt_alias.CallbackAPIVersion.VERSION2)
 
     obj_client.on_connect = on_connect
-    obj_client.on_message = on_message
 
     # Verbindungsversuch zum Broker
     while True:
