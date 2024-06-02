@@ -12,7 +12,6 @@ Module/Abhängigkeiten: <https://github.com/dresden-elektronik/deconz-rest-plugi
 """
 import time
 import paho.mqtt.client as mqtt_alias
-import requests
 
 # Publisher
 
@@ -24,35 +23,10 @@ topics = ["zigbee/lamp", "greenhouse/1/hum"]
 topic = "zigbee/lamp"
 client_id = "Lampe_Pub"
 
-
 # Zigbee/Deconz-Config
 # <https://dresden-elektronik.github.io/deconz-rest-doc/getting_started/#acquire-an-api-key>
 deconz_api_url = "http://[zigbee_gateway_ip]:[port]/api/[your_api_key]"
 lamp_id = "1"
-
-
-# Lichtkontrolle  control_lamp(True) -> Lampe AN ; control_lamp(False) -> Lampe AUS
-def control_lamp(turn_on):
-
-    # Zustand <https://dresden-elektronik.github.io/deconz-rest-doc/endpoints/lights/#set-light-state>
-    state = "on" if turn_on else "off"
-
-    # Set state REST-API URL
-    url = f"{deconz_api_url}/lights/{lamp_id}/state"
-
-    # Payload-Data im JSON Format
-    data = {"on": turn_on}
-
-    try:
-        # Put Request <https://dresden-elektronik.github.io/deconz-rest-doc/getting_started/#turn-light-onoff>
-        response = requests.put(url, json=data)
-
-        if response.status_code == 200:  # HTTP OK
-            print(f"Lamp turned {state}")
-        else:
-            print(f"Failed to turn {state} the lamp: {response.text}")  # HTTP ERROR
-    except Exception as e:
-        print(f"Error controlling the lamp: {e}")
 
 
 # MQTT
@@ -63,17 +37,19 @@ def on_connect(client, userdata, flags, rc, properties):
 
 
 # Publisher
-def publish(client):
+def publish(client, turn_on: bool) -> int:
     while True:
         try:
             const_on: str = 'on'
             const_off: str = 'off'
 
-            flag: bool = True
+            state = "on" if turn_on else "off"
 
-            if flag:  # if flag == True
+            if state == "on":
+                flag = True
                 client.publish(topics[0], const_on)
-            elif not flag:
+            elif state == "off":
+                flag = False
                 client.publish(topics[0], const_off)
             else:
                 return 0
@@ -105,8 +81,17 @@ def connect_mqtt() -> mqtt_alias.Client:
 def main():
     try:
         obj_client = connect_mqtt()  # Verbindungsaufbau
-        publish(obj_client)
+
+        for x in range(1, 3, 1):
+            print(str(x) + "\tSekunden...")
+            time.sleep(1)
+
+        publish(obj_client, turn_on=True)
+        time.sleep(3)
+        publish(obj_client, turn_on=False)
+
         obj_client.loop_forever()  # Endlosschleife
+            
     except KeyboardInterrupt:
         print("Program terminated by user.")
 
