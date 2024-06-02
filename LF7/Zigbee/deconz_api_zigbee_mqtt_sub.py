@@ -13,6 +13,9 @@ Module/Abhängigkeiten/docs:"""
 # ---
 # <https://dresden-elektronik.github.io/deconz-rest-doc/endpoints/lights/#set-light-state>
 # <https://dresden-elektronik.github.io/deconz-rest-doc/getting_started/#turn-light-onoff>
+# ---
+# e.g 192.168.178.109/api/7B6BEDD305/lights/2
+# "http://{zigbee_gateway_ip}:{port}/api/{your_api_key}"
 
 import time
 import logging
@@ -28,8 +31,6 @@ client_id = "Lampe_Sub"
 topics = ["zigbee/lamp", "zigbee/door"]
 
 # Zigbee
-# e.g 192.168.178.109/api/7B6BEDD305/lights/2
-# "http://{zigbee_gateway_ip}:{port}/api/{your_api_key}"
 lamp_id = "2"
 deconz_api_url = "http://192.168.178.109/api/7B6BEDD305"
 

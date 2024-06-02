@@ -9,10 +9,12 @@ Lizenz: GPL-3.0, GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007
 Sprachen/Protokolle: Python, MQTT, Zigbee, HTTP requests, REST-API
 Datum: 30.05.2024
 Module/Abhängigkeiten/docs:"""
+
 import time
 import paho.mqtt.client as mqtt_alias
 
-# MQTT-Config
+# Konstanten
+# MQTT
 broker = "domipi"
 port = 1883
 client_id = "Lampe_Pub"
