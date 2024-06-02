@@ -72,9 +72,9 @@ def on_connect(client, userdata, flags, rc, properties):
 # Subscriber
 def on_message(client, userdata, message):
     try:
-        payload = message.payload.decode()
+        payload = message.payload.decode()  # Nutzlast dekodieren
 
-        if payload.lower() == "on":
+        if payload.lower() == "on":  # Groß- und Kleinschreibung nicht berücksichtigt
             control_lamp(True)  # Lampe AN
 
         elif payload.lower() == "off":
