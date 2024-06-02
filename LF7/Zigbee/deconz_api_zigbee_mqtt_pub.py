@@ -8,8 +8,7 @@ Lizenz: GPL-3.0, GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007
         of this license document, but changing it is not allowed.
 Sprachen/Protokolle: Python, MQTT, Zigbee, HTTP requests, REST-API
 Datum: 30.05.2024
-Module/Abhängigkeiten: <https://github.com/dresden-elektronik/deconz-rest-plugin>
-"""
+Module/Abhängigkeiten/docs:"""
 import time
 import paho.mqtt.client as mqtt_alias
 

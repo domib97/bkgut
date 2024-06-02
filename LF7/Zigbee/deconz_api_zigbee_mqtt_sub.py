@@ -6,10 +6,14 @@ Lizenz: GPL-3.0, GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007
         Copyright (C) 2007 Free Software Foundation, Inc. <https://fsf.org/>
         Everyone is permitted to copy and distribute verbatim copies
         of this license document, but changing it is not allowed.
-Sprachen/Protokolle: Python, MQTT, Zigbee, HTTP requests, REST-API
+Sprachen/Protokolle: Python, MQTT, Zigbee, HTTP requests, REST-API, logging
 Datum: 30.05.2024
-Module/Abhängigkeiten: <https://github.com/dresden-elektronik/deconz-rest-plugin>
-"""
+Module/Abhängigkeiten/docs:"""
+# <https://github.com/dresden-elektronik/deconz-rest-plugin>
+# ---
+# <https://dresden-elektronik.github.io/deconz-rest-doc/endpoints/lights/#set-light-state>
+# <https://dresden-elektronik.github.io/deconz-rest-doc/getting_started/#turn-light-onoff>
+
 import time
 import logging
 import paho.mqtt.client as mqtt_alias
@@ -24,9 +28,6 @@ topic = "zigbee/lamp"
 client_id = "Lampe_Sub"
 
 # Zigbee
-# <https://dresden-elektronik.github.io/deconz-rest-doc/endpoints/lights/#set-light-state>
-# <https://dresden-elektronik.github.io/deconz-rest-doc/getting_started/#turn-light-onoff>
-
 # e.g 192.168.178.109/api/7B6BEDD305/lights/2
 # "http://{zigbee_gateway_ip}:{port}/api/{your_api_key}"
 lamp_id = "2"
