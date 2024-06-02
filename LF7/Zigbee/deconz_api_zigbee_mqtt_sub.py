@@ -62,7 +62,7 @@ def control_lamp(turn_on: bool) -> None:
 def on_connect(client, userdata, flags, rc, properties):
     if rc == 0:
         logging.info("Connected to MQTT broker with result code " + str(rc))
-        print("\n:-)\n\nConnected to MQTT Broker!\nWaiting for Data:\n.\n.\n.\n")
+        print("\n#GoodVibesOnly\n:-)\n\nConnected to MQTT Broker!\nWaiting for Data:\n.\n.\n.\n")
     else:
         logging.error(f"Connection failed with result code {rc}")
 
