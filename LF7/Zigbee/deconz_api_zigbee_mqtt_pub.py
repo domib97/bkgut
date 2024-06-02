@@ -29,13 +29,6 @@ deconz_api_url = "http://[zigbee_gateway_ip]:[port]/api/[your_api_key]"
 lamp_id = "1"
 
 
-# MQTT
-def on_connect(client, userdata, flags, rc, properties):
-    # **No arguments for on_connect!**
-    print("Connected to MQTT broker with result code " + str(rc))
-    client.subscribe(topic)  # Subscribe after connection established
-
-
 # Publisher
 def publish(client, turn_on: bool) -> int:
     while True:
@@ -61,8 +54,6 @@ def connect_mqtt() -> mqtt_alias.Client:
 
     # Client Objekterstellung
     obj_client = mqtt_alias.Client(mqtt_alias.CallbackAPIVersion.VERSION2)
-
-    obj_client.on_connect = on_connect
 
     # Verbindungsversuch zum Broker
     while True:
@@ -91,9 +82,8 @@ def main():
         time.sleep(3)
         publish(obj_client, turn_on=False)
         print("Turn off")
-
         obj_client.loop_forever()  # Endlosschleife
-            
+
     except KeyboardInterrupt:
         print("Program terminated by user.")
 
