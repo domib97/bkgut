@@ -42,6 +42,7 @@ def publish(client, turn_on: bool) -> int:
         finally:
             return 0
 
+
 # MQTT Verbindung aufbauen
 def connect_mqtt() -> mqtt_alias.Client:
 
