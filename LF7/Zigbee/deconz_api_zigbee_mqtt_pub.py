@@ -81,10 +81,13 @@ def connect_mqtt() -> mqtt_alias.Client:
 def main():
     try:
         obj_client = connect_mqtt()  # Verbindungsaufbau
+
         publish(obj_client, turn_on=True)
         time.sleep(3)
         publish(obj_client, turn_on=False)
+
         obj_client.loop_forever()  # Endlosschleife
+            
     except KeyboardInterrupt:
         print("Program terminated by user.")
 
