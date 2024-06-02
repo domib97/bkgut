@@ -73,18 +73,19 @@ def main():
 
         publish(obj_client, turn_on=True)
         print("Turned on")
-        time.sleep(1)
+        time.sleep(1.5)
         publish(obj_client, turn_on=False)
         print("Turned off")
-        time.sleep(1)
+        time.sleep(1.5)
         publish(obj_client, turn_on=True)
         print("Turned on")
-        time.sleep(1)
+        time.sleep(1.5)
         publish(obj_client, turn_on=False)
         print("Turned off")
-        time.sleep(1)
+        time.sleep(1.5)
         publish(obj_client, turn_on=True)
         print("Turned on")
+
         time.sleep(3)
         obj_client.loop_forever()  # Endlosschleife
 
