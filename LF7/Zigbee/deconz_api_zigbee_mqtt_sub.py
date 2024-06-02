@@ -31,6 +31,7 @@ client_id = "Lampe_Sub"
 topics = ["zigbee/lamp", "zigbee/door"]
 
 # Zigbee
+# Achtung! Niemals private API keys in ein öffentliches Repository (Repo) commiten und/oder pushen
 lamp_id = "2"
 deconz_api_url = "http://192.168.178.109/api/7B6BEDD305"
 
