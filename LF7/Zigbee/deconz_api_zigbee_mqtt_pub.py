@@ -18,15 +18,10 @@ import paho.mqtt.client as mqtt_alias
 # MQTT-Config
 broker = "domipi"
 port = 1883
-# topics = [("zigbee/lamp", 0), ("zigbee/door", 0)]
-topics = ["zigbee/lamp", "greenhouse/1/hum"]
-topic = "zigbee/lamp"
 client_id = "Lampe_Pub"
 
-# Zigbee/Deconz-Config
-# <https://dresden-elektronik.github.io/deconz-rest-doc/getting_started/#acquire-an-api-key>
-deconz_api_url = "http://[zigbee_gateway_ip]:[port]/api/[your_api_key]"
-lamp_id = "1"
+# //todo topics = [("zigbee/lamp", 0), ("zigbee/door", 0)]
+topics = ["zigbee/lamp", "greenhouse/1/hum"]
 
 
 # Publisher
@@ -82,6 +77,7 @@ def main():
         time.sleep(3)
         publish(obj_client, turn_on=False)
         print("Turn off")
+
         obj_client.loop_forever()  # Endlosschleife
 
     except KeyboardInterrupt:
