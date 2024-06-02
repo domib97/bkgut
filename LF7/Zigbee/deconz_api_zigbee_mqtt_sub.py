@@ -1,5 +1,5 @@
 """
-Titel: Röntgenraum_Projekt - Subscriber
+Titel: deconz_api_zigbee_mqtt_sub.py
 Organisation: BkGuT
 Ersteller: Dan, Domi FISI-24
 Lizenz: GPL-3.0, GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007

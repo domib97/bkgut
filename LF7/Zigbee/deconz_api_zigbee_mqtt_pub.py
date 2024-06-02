@@ -1,5 +1,5 @@
 """
-Titel: Röntgenraum_Projekt
+Titel: deconz_api_zigbee_mqtt_pub.py
 Organisation: BkGuT
 Ersteller: Dan, Domi FISI-24
 Lizenz: GPL-3.0, GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007
@@ -12,8 +12,6 @@ Module/Abhängigkeiten: <https://github.com/dresden-elektronik/deconz-rest-plugi
 """
 import time
 import paho.mqtt.client as mqtt_alias
-
-# Publisher
 
 # MQTT-Config
 broker = "domipi"
