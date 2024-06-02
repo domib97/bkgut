@@ -72,7 +72,7 @@ def main():
             print(str(x) + "\tSekunden...")
             time.sleep(1)
 
-        def on_off_on():
+        def on_off_on():  # eine Funktion die das Licht, EIN, AUS und wieder EIN schaltet
             time.sleep(0.5)
             publish(obj_client, turn_on=True)
             print("Turned on")
