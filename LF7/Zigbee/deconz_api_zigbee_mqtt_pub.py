@@ -80,7 +80,7 @@ def connect_mqtt() -> mqtt_alias.Client:
 # main Funktion
 def main():
     try:
-        obj_client = connect_mqtt()  # Verbindungsaufba
+        obj_client = connect_mqtt()  # Verbindungsaufbau
 
         for x in range(1, 3, 1):
             print(str(x) + "\tSekunden...")
