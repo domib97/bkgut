@@ -17,9 +17,9 @@ import paho.mqtt.client as mqtt_alias
 broker = "domipi"
 port = 1883
 client_id = "Lampe_Pub"
+topics = ["zigbee/lamp", "greenhouse/1/hum"]
 
 # //todo topics = [("zigbee/lamp", 0), ("zigbee/door", 0)]
-topics = ["zigbee/lamp", "greenhouse/1/hum"]
 
 
 # Publisher
@@ -42,7 +42,7 @@ def publish(client, turn_on: bool) -> int:
         finally:
             return 0
 
-
+# MQTT Verbindung aufbauen
 def connect_mqtt() -> mqtt_alias.Client:
 
     # Client Objekterstellung
