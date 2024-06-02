@@ -24,8 +24,8 @@ import requests
 # MQTT
 broker = "domipi"
 port = 1883
-topic = "zigbee/lamp"
 client_id = "Lampe_Sub"
+topics = ["zigbee/lamp", "zigbee/door"]
 
 # Zigbee
 # e.g 192.168.178.109/api/7B6BEDD305/lights/2
@@ -36,7 +36,7 @@ deconz_api_url = "http://192.168.178.109/api/7B6BEDD305"
 logging.basicConfig(level=logging.INFO)  # Logging
 
 
-# deconz API Lichtkontrolle
+# Lichtkontrolle
 # control_lamp(True) -> Lampe AN
 # control_lamp(False) -> Lampe AUS
 def control_lamp(turn_on: bool) -> None:
@@ -70,7 +70,7 @@ def on_connect(client, userdata, flags, rc, properties):
     else:
         logging.error(f"Connection failed with result code {rc}")
 
-    client.subscribe(topic)  # topic abonnieren wenn Verbindung aufgebaut
+    client.subscribe(topics[0])  # topic abonnieren wenn Verbindung aufgebaut
 
 
 # Subscriber

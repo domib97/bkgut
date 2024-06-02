@@ -16,7 +16,7 @@ import paho.mqtt.client as mqtt_alias
 broker = "domipi"
 port = 1883
 client_id = "Lampe_Pub"
-topics = ["zigbee/lamp", "greenhouse/1/hum"]
+topics = ["zigbee/lamp", "zigbee/door"]
 
 # //todo topics = [("zigbee/lamp", 0), ("zigbee/door", 0)]
 
