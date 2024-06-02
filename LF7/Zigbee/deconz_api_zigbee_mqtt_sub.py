@@ -1,5 +1,5 @@
 """
-Titel: Röntgenraum_Projekt - Subscriber
+Titel: deconz_api_zigbee_mqtt_sub.py
 Organisation: BkGuT
 Ersteller: Dan, Domi FISI-24
 Lizenz: GPL-3.0, GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007
@@ -17,24 +17,24 @@ import requests
 # import json //todo: Helligkeit über JSON dimmbar machen
 
 # Konstanten
-# Zigbee:
-# <http://192.168.178.109/pwa/debug-api.html?_v=8c5c21ec4bb8f073a864fd191077923cfa03c762,5,6,17&gwid=00212EFFFF0E474D>
-# -> 192.168.178.109/api/7B6BEDD305/lights/2
+# MQTT
 broker = "domipi"
 port = 1883
 topic = "zigbee/lamp"
 client_id = "Lampe_Sub"
 
+# Zigbee
+# e.g 192.168.178.109/api/7B6BEDD305/lights/2
+# "http://{zigbee_gateway_ip}:{port}/api/{your_api_key}"
 lamp_id = "2"
 deconz_api_url = "http://192.168.178.109/api/7B6BEDD305"
-# deconz_api_url = "http://{zigbee_gateway_ip}:{port}/api/{your_api_key}"
+
+logging.basicConfig(level=logging.INFO)  # Logging
 
 
-# Logging
-logging.basicConfig(level=logging.INFO)
-
-
-# Zigbee Lichtkontrolle  control_lamp(True) -> Lampe AN ; control_lamp(False) -> Lampe AUS
+# deconz API Lichtkontrolle
+# control_lamp(True) -> Lampe AN
+# control_lamp(False) -> Lampe AUS
 def control_lamp(turn_on: bool) -> None:
 
     # Zustand <https://dresden-elektronik.github.io/deconz-rest-doc/endpoints/lights/#set-light-state>
@@ -58,7 +58,7 @@ def control_lamp(turn_on: bool) -> None:
         logging.error(f"Error controlling the lamp: {e}")
 
 
-# MQTT
+# Willkommensnachricht
 def on_connect(client, userdata, flags, rc, properties):
     if rc == 0:
         logging.info("Connected to MQTT broker with result code " + str(rc))
@@ -66,9 +66,10 @@ def on_connect(client, userdata, flags, rc, properties):
     else:
         logging.error(f"Connection failed with result code {rc}")
 
-    client.subscribe(topic)  # Subscribe after connection established
+    client.subscribe(topic)  # topic abonnieren wenn Verbindung aufgebaut
 
 
+# Subscriber
 def on_message(client, userdata, message):
     try:
         payload = message.payload.decode()
@@ -85,6 +86,7 @@ def on_message(client, userdata, message):
         print(f"Error processing message: {er}")
 
 
+# MQTT Verbindung aufbauen
 def connect_mqtt() -> mqtt_alias.Client:
 
     # Client Objekterstellung

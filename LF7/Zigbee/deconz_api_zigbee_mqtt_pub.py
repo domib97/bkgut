@@ -1,5 +1,5 @@
 """
-Titel: Röntgenraum_Projekt
+Titel: deconz_api_zigbee_mqtt_pub.py
 Organisation: BkGuT
 Ersteller: Dan, Domi FISI-24
 Lizenz: GPL-3.0, GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007
@@ -13,27 +13,13 @@ Module/Abhängigkeiten: <https://github.com/dresden-elektronik/deconz-rest-plugi
 import time
 import paho.mqtt.client as mqtt_alias
 
-# Publisher
-
 # MQTT-Config
 broker = "domipi"
 port = 1883
-# topics = [("zigbee/lamp", 0), ("zigbee/door", 0)]
-topics = ["zigbee/lamp", "greenhouse/1/hum"]
-topic = "zigbee/lamp"
 client_id = "Lampe_Pub"
+topics = ["zigbee/lamp", "greenhouse/1/hum"]
 
-# Zigbee/Deconz-Config
-# <https://dresden-elektronik.github.io/deconz-rest-doc/getting_started/#acquire-an-api-key>
-deconz_api_url = "http://[zigbee_gateway_ip]:[port]/api/[your_api_key]"
-lamp_id = "1"
-
-
-# MQTT
-def on_connect(client, userdata, flags, rc, properties):
-    # **No arguments for on_connect!**
-    print("Connected to MQTT broker with result code " + str(rc))
-    client.subscribe(topic)  # Subscribe after connection established
+# //todo topics = [("zigbee/lamp", 0), ("zigbee/door", 0)]
 
 
 # Publisher
@@ -56,13 +42,11 @@ def publish(client, turn_on: bool) -> int:
         finally:
             return 0
 
-
+# MQTT Verbindung aufbauen
 def connect_mqtt() -> mqtt_alias.Client:
 
     # Client Objekterstellung
     obj_client = mqtt_alias.Client(mqtt_alias.CallbackAPIVersion.VERSION2)
-
-    obj_client.on_connect = on_connect
 
     # Verbindungsversuch zum Broker
     while True:
@@ -82,16 +66,18 @@ def main():
     try:
         obj_client = connect_mqtt()  # Verbindungsaufbau
 
-        for x in range(1, 3, 1):
+        for x in range(1, 4, 1):
             print(str(x) + "\tSekunden...")
             time.sleep(1)
 
         publish(obj_client, turn_on=True)
+        print("Turn on")
         time.sleep(3)
         publish(obj_client, turn_on=False)
+        print("Turn off")
 
         obj_client.loop_forever()  # Endlosschleife
-            
+
     except KeyboardInterrupt:
         print("Program terminated by user.")
 
