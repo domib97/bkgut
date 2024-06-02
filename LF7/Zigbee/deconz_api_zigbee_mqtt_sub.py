@@ -24,6 +24,9 @@ topic = "zigbee/lamp"
 client_id = "Lampe_Sub"
 
 # Zigbee
+# <https://dresden-elektronik.github.io/deconz-rest-doc/endpoints/lights/#set-light-state>
+# <https://dresden-elektronik.github.io/deconz-rest-doc/getting_started/#turn-light-onoff>
+
 # e.g 192.168.178.109/api/7B6BEDD305/lights/2
 # "http://{zigbee_gateway_ip}:{port}/api/{your_api_key}"
 lamp_id = "2"
@@ -37,7 +40,7 @@ logging.basicConfig(level=logging.INFO)  # Logging
 # control_lamp(False) -> Lampe AUS
 def control_lamp(turn_on: bool) -> None:
 
-    # Zustand <https://dresden-elektronik.github.io/deconz-rest-doc/endpoints/lights/#set-light-state>
+    # Zustand
     state = "on" if turn_on else "off"
 
     # Set state REST-API URL
@@ -47,7 +50,7 @@ def control_lamp(turn_on: bool) -> None:
     data = {"on": turn_on}
 
     try:
-        # Put Request <https://dresden-elektronik.github.io/deconz-rest-doc/getting_started/#turn-light-onoff>
+        # Put Request
         response = requests.put(url, json=data)
 
         if response.status_code == 200:  # HTTP OK
@@ -74,7 +77,7 @@ def on_message(client, userdata, message):
     try:
         payload = message.payload.decode()  # Nutzlast dekodieren
 
-        if payload.lower() == "on":  # Groß- und Kleinschreibung nicht berücksichtigt
+        if payload.lower() == "on":  # Groß- und Kleinschreibung wird nicht berücksichtigt
             control_lamp(True)  # Lampe AN
 
         elif payload.lower() == "off":
