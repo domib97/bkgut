@@ -82,6 +82,10 @@ def main():
     try:
         obj_client = connect_mqtt()  # Verbindungsaufbau
 
+        for x in range(1, 3, 1):
+            print(str(x) + "\tSekunden...")
+            time.sleep(1)
+
         publish(obj_client, turn_on=True)
         time.sleep(3)
         publish(obj_client, turn_on=False)
