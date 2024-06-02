@@ -82,13 +82,15 @@ def main():
     try:
         obj_client = connect_mqtt()  # Verbindungsaufbau
 
-        for x in range(1, 3, 1):
+        for x in range(1, 4, 1):
             print(str(x) + "\tSekunden...")
             time.sleep(1)
 
         publish(obj_client, turn_on=True)
+        print("Turn on")
         time.sleep(3)
         publish(obj_client, turn_on=False)
+        print("Turn off")
 
         obj_client.loop_forever()  # Endlosschleife
             
