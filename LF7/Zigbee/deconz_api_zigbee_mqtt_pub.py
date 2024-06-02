@@ -42,6 +42,7 @@ def publish(client, turn_on: bool) -> int:
         finally:
             return 0
 
+
 # MQTT Verbindung aufbauen
 def connect_mqtt() -> mqtt_alias.Client:
 
@@ -70,12 +71,20 @@ def main():
             print(str(x) + "\tSekunden...")
             time.sleep(1)
 
-        publish(obj_client, turn_on=True)
-        print("Turn on")
-        time.sleep(3)
-        publish(obj_client, turn_on=False)
-        print("Turn off")
+        def on_off_on():
+            time.sleep(0.5)
+            publish(obj_client, turn_on=True)
+            print("Turned on")
+            time.sleep(1.5)
+            publish(obj_client, turn_on=False)
+            print("Turned off")
+            time.sleep(1.5)
+            publish(obj_client, turn_on=True)
+            print("Turned on")
 
+        on_off_on()
+
+        time.sleep(3)
         obj_client.loop_forever()  # Endlosschleife
 
     except KeyboardInterrupt:
