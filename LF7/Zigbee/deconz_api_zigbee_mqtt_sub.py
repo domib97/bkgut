@@ -31,7 +31,7 @@ client_id = "Lampe_Sub"
 topics = ["zigbee/lamp", "zigbee/door"]
 
 # Zigbee
-# Achtung! Niemals private API keys in ein öffentliches Repository (Repo) commiten und/oder pushen
+# Achtung! Niemals private API keys in ein öffentliches Repository (Repo) pushen
 lamp_id = "2"
 deconz_api_url = "http://192.168.178.109/api/7B6BEDD305"
 
@@ -112,7 +112,7 @@ def connect_mqtt() -> mqtt_alias.Client:
             logging.info("Attempting to reconnect in 5 seconds...")
             time.sleep(5)
     return obj_client
- 
+
 
 # main Funktion
 def main():
