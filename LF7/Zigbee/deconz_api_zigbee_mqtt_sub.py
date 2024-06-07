@@ -19,9 +19,11 @@ Module/Abhängigkeiten/docs:"""
 
 import time
 import logging
-import paho.mqtt.client as mqtt_alias
 import requests
 # import json //todo: Helligkeit über JSON dimmbar machen
+
+import paho.mqtt.client as mqtt_alias
+import paho.mqtt.subscribe as subscribe  # High-Level Lösung
 
 # Konstanten
 # MQTT
@@ -113,6 +115,23 @@ def connect_mqtt() -> mqtt_alias.Client:
             time.sleep(5)
     return obj_client
 
+"""
+# Zugriffsdaten für MQTT-Broker und andere Konfigurationsdaten
+print("Zugriffs- und Konfigurationsdaten festlegen")
+# URL = "test.mosquitto.org"       # Public free MQTT Broker
+URL = "localhost"    # Lokaler MQTT Broker
+TOPICS = ["bkgut/test/temperatur", "bkgut/test/luftfeuchtigkeit"]
+
+# Callbackfunktion bei Werteempfang
+def cb_anzeigen(client, userdata, message):
+    topic = message.topic
+    wert = message.payload.decode("utf-8")
+    print(f"{topic:30s} : {wert:20s}")
+
+# Subsciber für MQTT-Broker initialisiseren
+print("Empfangene Werte von MQTT-Brocker verarbeiten")
+subscribe.callback(cb_anzeigen, TOPICS, hostname=URL, qos=1)
+"""
 
 # main Funktion
 def main():

@@ -12,6 +12,7 @@ Module/Abhängigkeiten/docs:"""
 
 import time
 import paho.mqtt.client as mqtt_alias
+import paho.mqtt.publish as publish  # High-Level Lösung
 
 # Konstanten
 # MQTT
@@ -61,6 +62,26 @@ def connect_mqtt() -> mqtt_alias.Client:
             print("Attempting to reconnect in 5 seconds...\n")
             time.sleep(5)
     return obj_client
+
+"""
+# Zugriffsdaten für MQTT-Broker und andere Konfigurationsdaten
+print("Zugriffs- und Konfigurationsdaten festlegen")
+# URL = "test.mosquitto.org"    # Public free MQTT Broker
+URL = "localhost"    # Lokaler MQTT Broker
+INTERVALL = 2
+
+
+# Werte an MQTT-Broker senden
+print("Werte an MQTT-Broker senden")
+sensor = wg.LuftSensor()
+while True:
+    temperatur = sensor.temperatur()
+    luftfeuchtigkeit = sensor.luftfeuchtigkeit()
+    publish.single("bkgut/test/temperatur", temperatur, hostname=URL, qos=1)
+    publish.single("bkgut/test/luftfeuchtigkeit", luftfeuchtigkeit, hostname=URL, qos=1)
+    print(".", end="")
+    time.sleep(INTERVALL)
+"""
 
 
 # main Funktion
