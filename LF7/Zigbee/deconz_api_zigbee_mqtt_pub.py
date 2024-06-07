@@ -12,7 +12,7 @@ Module/Abhängigkeiten/docs:"""
 
 import time
 import paho.mqtt.client as mqtt_alias
-import paho.mqtt.publish as publish  # High-Level Lösung
+import paho.mqtt.publish as publish_  # High-Level Lösung
 
 # Konstanten
 # MQTT
@@ -34,10 +34,10 @@ def publish(client, turn_on: bool) -> int:
             state = "on" if turn_on else "off"
 
             if state == "on":
-                flag = True
+                # flag = True
                 client.publish(topics[0], const_on)
             elif state == "off":
-                flag = False
+                # flag = False
                 client.publish(topics[0], const_off)
             else:
                 return 0
@@ -49,7 +49,8 @@ def publish(client, turn_on: bool) -> int:
 def connect_mqtt() -> mqtt_alias.Client:
 
     # Client Objekterstellung
-    obj_client = mqtt_alias.Client(mqtt_alias.CallbackAPIVersion.VERSION2)
+    # obj_client = mqtt_alias.Client(mqtt_alias.CallbackAPIVersion.VERSION2)
+    obj_client = mqtt_alias.Client()
 
     # Verbindungsversuch zum Broker
     while True:
@@ -62,6 +63,7 @@ def connect_mqtt() -> mqtt_alias.Client:
             print("Attempting to reconnect in 5 seconds...\n")
             time.sleep(5)
     return obj_client
+
 
 """
 # Zugriffsdaten für MQTT-Broker und andere Konfigurationsdaten
@@ -77,8 +79,8 @@ sensor = wg.LuftSensor()
 while True:
     temperatur = sensor.temperatur()
     luftfeuchtigkeit = sensor.luftfeuchtigkeit()
-    publish.single("bkgut/test/temperatur", temperatur, hostname=URL, qos=1)
-    publish.single("bkgut/test/luftfeuchtigkeit", luftfeuchtigkeit, hostname=URL, qos=1)
+    publish_.single("bkgut/test/temperatur", temperatur, hostname=URL, qos=1)
+    publish_.single("bkgut/test/luftfeuchtigkeit", luftfeuchtigkeit, hostname=URL, qos=1)
     print(".", end="")
     time.sleep(INTERVALL)
 """

@@ -23,7 +23,7 @@ import requests
 # import json //todo: Helligkeit über JSON dimmbar machen
 
 import paho.mqtt.client as mqtt_alias
-import paho.mqtt.subscribe as subscribe  # High-Level Lösung
+import paho.mqtt.subscribe as subscribe_  # High-Level Lösung
 
 # Konstanten
 # MQTT
@@ -98,7 +98,8 @@ def on_message(client, userdata, message):
 def connect_mqtt() -> mqtt_alias.Client:
 
     # Client Objekterstellung
-    obj_client = mqtt_alias.Client(mqtt_alias.CallbackAPIVersion.VERSION2)
+    # obj_client = mqtt_alias.Client(mqtt_alias.CallbackAPIVersion.VERSION2)  # neue Version
+    obj_client = mqtt_alias.Client()
 
     obj_client.on_connect = on_connect
     obj_client.on_message = on_message
@@ -115,6 +116,7 @@ def connect_mqtt() -> mqtt_alias.Client:
             time.sleep(5)
     return obj_client
 
+
 """
 # Zugriffsdaten für MQTT-Broker und andere Konfigurationsdaten
 print("Zugriffs- und Konfigurationsdaten festlegen")
@@ -130,8 +132,9 @@ def cb_anzeigen(client, userdata, message):
 
 # Subsciber für MQTT-Broker initialisiseren
 print("Empfangene Werte von MQTT-Brocker verarbeiten")
-subscribe.callback(cb_anzeigen, TOPICS, hostname=URL, qos=1)
+subscribe_.callback(cb_anzeigen, TOPICS, hostname=URL, qos=1)
 """
+
 
 # main Funktion
 def main():
