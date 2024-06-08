@@ -22,7 +22,6 @@ import logging
 import requests
 # import json //todo: Helligkeit über JSON dimmbar machen
 
-import paho.mqtt.client as mqtt_alias
 import paho.mqtt.subscribe as subscribe_  # High-Level Lösung
 
 # Konstanten
@@ -66,21 +65,10 @@ def control_lamp(turn_on: bool) -> None:
         logging.error(f"Error controlling the lamp: {e}")
 
 
-# Willkommensnachricht
-def on_connect(client, userdata, flags, rc, properties):
-    if rc == 0:
-        logging.info("Connected to MQTT broker with result code " + str(rc))
-        print("\n#GoodVibesOnly\n:-)\n\nConnected to MQTT Broker!\nWaiting for Data:\n.\n.\n.\n")
-    else:
-        logging.error(f"Connection failed with result code {rc}")
-
-    client.subscribe(topics[0])  # topic abonnieren wenn Verbindung aufgebaut
-
-
-# Subscriber
-def on_message(client, userdata, message):
+# Callback Funktion Subscriber
+def on_message(client, userdata, message) -> None:
     try:
-        payload = message.payload.decode()  # Nutzlast dekodieren
+        payload = message.payload.decode("utf-8")  # Nutzlast dekodieren
 
         if payload.lower() == "on":  # Groß- und Kleinschreibung wird nicht berücksichtigt
             control_lamp(True)  # Lampe AN
@@ -94,53 +82,12 @@ def on_message(client, userdata, message):
         print(f"Error processing message: {er}")
 
 
-# MQTT Verbindung aufbauen
-def connect_mqtt() -> mqtt_alias.Client:
-
-    # Client Objekterstellung
-    # obj_client = mqtt_alias.Client(mqtt_alias.CallbackAPIVersion.VERSION2)  # neue Version
-    obj_client = mqtt_alias.Client()
-
-    obj_client.on_connect = on_connect
-    obj_client.on_message = on_message
-
-    # Verbindungsversuch zum Broker
-    while True:
-        try:
-            obj_client.connect(broker, port, 60)
-            logging.info("Connected to MQTT Broker!")
-            break
-        except Exception as e:
-            logging.error(f"Failed to connect to MQTT Broker: {e}")
-            logging.info("Attempting to reconnect in 5 seconds...")
-            time.sleep(5)
-    return obj_client
-
-
-"""
-# Zugriffsdaten für MQTT-Broker und andere Konfigurationsdaten
-print("Zugriffs- und Konfigurationsdaten festlegen")
-# URL = "test.mosquitto.org"       # Public free MQTT Broker
-URL = "localhost"    # Lokaler MQTT Broker
-TOPICS = ["bkgut/test/temperatur", "bkgut/test/luftfeuchtigkeit"]
-
-# Callbackfunktion bei Werteempfang
-def cb_anzeigen(client, userdata, message):
-    topic = message.topic
-    wert = message.payload.decode("utf-8")
-    print(f"{topic:30s} : {wert:20s}")
-
-# Subsciber für MQTT-Broker initialisiseren
-print("Empfangene Werte von MQTT-Brocker verarbeiten")
-subscribe_.callback(cb_anzeigen, TOPICS, hostname=URL, qos=1)
-"""
-
-
 # main Funktion
-def main():
+def main() -> None:
     try:
-        obj_client = connect_mqtt()  # Verbindungsaufbau
-        obj_client.loop_forever()  # Endlosschleife
+        # Subscriber für MQTT-Broker initialisieren
+        print("Empfangene Werte von MQTT-Brocker verarbeiten")
+        subscribe_.callback(on_message, topics, hostname=broker, qos=1)
     except KeyboardInterrupt:
         logging.info("Program terminated by user.")
 
