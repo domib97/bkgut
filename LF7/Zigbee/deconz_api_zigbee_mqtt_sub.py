@@ -20,9 +20,9 @@ Module/Abhängigkeiten/docs:"""
 import time
 import logging
 import requests
-# import json //todo: Helligkeit über JSON dimmbar machen
+import paho.mqtt.subscribe as subscribe  # High-Level Lösung ohne eigenen Client
 
-import paho.mqtt.subscribe as subscribe_  # High-Level Lösung
+# import json //todo: Helligkeit über JSON dimmbar machen
 
 # Konstanten
 # MQTT
@@ -32,7 +32,6 @@ client_id = "Lampe_Sub"
 topics = ["zigbee/lamp", "zigbee/door"]
 
 # Zigbee
-# Achtung! Niemals private API keys in ein öffentliches Repository (Repo) pushen
 lamp_id = "2"
 deconz_api_url = "http://192.168.178.109/api/7B6BEDD305"
 
@@ -44,18 +43,12 @@ logging.basicConfig(level=logging.INFO)  # Logging
 # control_lamp(False) -> Lampe AUS
 def control_lamp(turn_on: bool) -> None:
 
-    # Zustand
-    state = "on" if turn_on else "off"
-
-    # Set state REST-API URL
-    url = f"{deconz_api_url}/lights/{lamp_id}/state"
-
-    # Payload-Data im JSON Format
-    data = {"on": turn_on}
+    state = "on" if turn_on else "off"  # Zustand
+    url = f"{deconz_api_url}/lights/{lamp_id}/state"  # Set state REST-API URL
+    data = {"on": turn_on}   # Payload-Data im JSON Format
 
     try:
-        # Put Request
-        response = requests.put(url, json=data)
+        response = requests.put(url, json=data)  # Put Request
 
         if response.status_code == 200:  # HTTP OK
             logging.info(f"Lamp turned {state}")
@@ -65,7 +58,7 @@ def control_lamp(turn_on: bool) -> None:
         logging.error(f"Error controlling the lamp: {e}")
 
 
-# Callback Funktion Subscriber
+# Callback Funktion
 def on_message(client, userdata, message) -> None:
     try:
         payload = message.payload.decode("utf-8")  # Nutzlast dekodieren
@@ -77,17 +70,18 @@ def on_message(client, userdata, message) -> None:
             control_lamp(False)  # Lampe AUS
 
         else:
-            print(f"Unknown command: {payload}")
+            logging.error(f"Unknown command: {payload}")
     except Exception as er:
-        print(f"Error processing message: {er}")
+        logging.error(f"Error processing message: {er}")
 
 
 # main Funktion
 def main() -> None:
     try:
-        # Subscriber für MQTT-Broker initialisieren
-        print("Empfangene Werte von MQTT-Brocker verarbeiten")
-        subscribe_.callback(on_message, topics, hostname=broker, qos=1)
+        print("\nWaiting for Data:\n.\n.\n.\n")
+        subscribe.callback(on_message, topics, hostname=broker, qos=1)  # Subscriber mit Callback Funktion
+    except Exception as e:
+        logging.error(f"Failed to connect to MQTT Broker: {e}")
     except KeyboardInterrupt:
         logging.info("Program terminated by user.")
 
