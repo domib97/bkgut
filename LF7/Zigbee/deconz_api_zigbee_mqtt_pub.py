@@ -6,47 +6,39 @@ Lizenz: GPL-3.0, GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007
         Copyright (C) 2007 Free Software Foundation, Inc. <https://fsf.org/>
         Everyone is permitted to copy and distribute verbatim copies
         of this license document, but changing it is not allowed.
-Sprachen/Protokolle: Python, MQTT1
+Sprachen/Protokolle: Python, MQTT
 Datum: 30.05.2024
-Module/Abhängigkeiten/docs:"""
+Module/Abhängigkeiten: time, paho.mqtt.client
+"""
 
 import time
-import paho.mqtt.client as mqtt_alias
+import paho.mqtt.client as mqtt
 
 # Konstanten
 # MQTT
-broker = "domipi"
+broker = "localhost"
 port = 1883
 client_id = "Lampe_Pub"
 topics = ["zigbee/lamp", "zigbee/door"]
-# //todo topics = [("zigbee/lamp", 0), ("zigbee/door", 0)]
+# todo topics = [("zigbee/lamp", 0), ("zigbee/door", 0)]
+
+const_on = 'on'
+const_off = 'off'
 
 
 # Publisher
 def publish(client, turn_on: bool) -> None:
-    while True:
-        const_on: str = 'on'
-        const_off: str = 'off'
-
-        state = "on" if turn_on else "off"
-
-        if state == "on":
-            client.publish(topics[0], const_on)
-        elif state == "off":
-            client.publish(topics[0], const_off)
+    state = const_on if turn_on else const_off
+    client.publish(topics[0], state)
 
 
 # MQTT Verbindung aufbauen
-def connect_mqtt() -> mqtt_alias.Client:
+def connect_mqtt() -> mqtt.Client:
+    obj_client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)  # Client Objekterstellung
 
-    # Client Objekterstellung
-    # obj_client = mqtt_alias.Client()  # alte Version
-    obj_client = mqtt_alias.Client(mqtt_alias.CallbackAPIVersion.VERSION2)
-
-    # Verbindungsversuch zum Broker
     while True:
         try:
-            obj_client.connect(broker, port, 60)
+            obj_client.connect(broker, port, 60)  # Verbindungsversuch zum Broker
             print("Connected to MQTT Broker!\nSending Data:\n")
             break
         except Exception as e:
@@ -60,16 +52,14 @@ def connect_mqtt() -> mqtt_alias.Client:
 def main():
     try:
         obj_client = connect_mqtt()  # Verbindungsaufbau
+        obj_client.loop_start()
 
-        def on_off():  # eine Funktion die das Licht EIN und wieder AUS schaltet
-            publish(obj_client, turn_on=True)
-            print("Turned on")
-            time.sleep(1.5)
-            publish(obj_client, turn_on=False)
-            print("Turned off")
-            time.sleep(1.5)
+        publish(obj_client, turn_on=True)
+        print("Turn on")
+        time.sleep(3)
 
-        on_off()
+        publish(obj_client, turn_on=False)
+        print("Turn off")
 
         obj_client.loop_forever()  # Endlosschleife
 

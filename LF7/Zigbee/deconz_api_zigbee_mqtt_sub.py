@@ -26,7 +26,7 @@ import paho.mqtt.subscribe as subscribe  # High-Level Lösung ohne eigenen Clien
 
 # Konstanten
 # MQTT
-broker = "domipi"
+broker = "localhost"
 port = 1883
 client_id = "Lampe_Sub"
 topics = ["zigbee/lamp", "zigbee/door"]
