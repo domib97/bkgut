@@ -20,15 +20,12 @@ broker = "localhost"
 port = 1883
 client_id = "Lampe_Pub"
 topics = ["zigbee/lamp", "zigbee/door"]
-# todo topics = [("zigbee/lamp", 0), ("zigbee/door", 0)]
-
-const_on = 'on'
-const_off = 'off'
 
 
 # Publisher
 def publish(client, turn_on: bool) -> None:
-    state = const_on if turn_on else const_off
+
+    state = "on" if turn_on else "off"  # Zustand
     client.publish(topics[0], state)
 
 

@@ -22,7 +22,7 @@ import logging
 import requests
 import paho.mqtt.subscribe as subscribe  # High-Level Lösung ohne eigenen Client
 
-# import json //todo: Helligkeit über JSON dimmbar machen
+# todo: Helligkeit über JSON dimmbar machen -> import json
 
 # Konstanten
 # MQTT
