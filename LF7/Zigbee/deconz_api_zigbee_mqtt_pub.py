@@ -12,14 +12,42 @@ Module/Abhängigkeiten: time, paho.mqtt.client
 """
 
 import time
+import logging
+import requests
 import paho.mqtt.client as mqtt
 
 # Konstanten
 # MQTT
 broker = "localhost"
 port = 1883
-client_id = "Lampe_Pub"
+client_id = "Lampe_Sub"
 topics = ["zigbee/lamp", "zigbee/door"]
+
+# Zigbee
+lamp_id = "1"
+sensor_id = "2"
+sensor_api_url = "http://172.17.0.105/api/3C3719D085"
+
+logging.basicConfig(level=logging.INFO)  # Logging
+
+
+# Sensorstatus abfragen
+def get_sensor_status() -> int:
+    url = f"{sensor_api_url}/sensors/{sensor_id}"
+
+    try:
+        response = requests.get(url)  # Get Request
+
+        if response.status_code == 200:  # HTTP OK
+            sensor_data = response.json()
+            is_open = sensor_data['state']['open']
+            status = "open" if is_open else "closed"
+            logging.info(f"Sensor status: {status}")
+        else:
+            logging.error(f"Failed to get sensor status: {response.text}")  # HTTP ERROR
+    except Exception as e:
+        logging.error(f"Error getting sensor status: {e}")
+    return is_open
 
 
 # Publisher
@@ -31,7 +59,7 @@ def publish(client, turn_on: bool) -> None:
 
 # MQTT Verbindung aufbauen
 def connect_mqtt() -> mqtt.Client:
-    obj_client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)  # Client Objekterstellung
+    obj_client = mqtt.Client()  # Client Objekterstellung
 
     while True:
         try:
@@ -51,12 +79,12 @@ def main():
         obj_client = connect_mqtt()  # Verbindungsaufbau
         obj_client.loop_start()
 
-        publish(obj_client, turn_on=True)
-        print("Turn on")
-        time.sleep(3)
+        print(get_sensor_status())
 
-        publish(obj_client, turn_on=False)
-        print("Turn off")
+        if get_sensor_status():
+            publish(obj_client, turn_on=True)
+        else:
+            publish(obj_client, turn_on=False)
 
         obj_client.loop_forever()  # Endlosschleife
 
