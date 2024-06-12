@@ -79,12 +79,7 @@ def main():
         obj_client = connect_mqtt()  # Verbindungsaufbau
         obj_client.loop_start()
 
-        print(get_sensor_status())
-
-        if get_sensor_status():
-            publish(obj_client, turn_on=True)
-        else:
-            publish(obj_client, turn_on=False)
+        publish(obj_client, turn_on=True) if get_sensor_status() else publish(obj_client, turn_on=False)
 
         obj_client.loop_forever()  # Endlosschleife
 
