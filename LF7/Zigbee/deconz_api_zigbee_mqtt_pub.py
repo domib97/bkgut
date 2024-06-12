@@ -75,12 +75,8 @@ def main():
         obj_client.loop_start()
 
         while True:
-            # publish(obj_client, turn_on=True) if get_sensor_status() else publish(obj_client, turn_on=False)
-            if get_sensor_status():
-                publish(obj_client, turn_on=True)
-            else:
-                publish(obj_client, turn_on=False)
-            time.sleep(5)  # Wartezeit zwischen den Abfragen
+            publish(obj_client, turn_on=True) if get_sensor_status() else publish(obj_client, turn_on=False)
+            time.sleep(1)
 
     except KeyboardInterrupt:
         print("Program terminated by user.")
