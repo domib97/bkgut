@@ -10,7 +10,6 @@ Sprachen/Protokolle: Python, MQTT
 Datum: 30.05.2024
 Module/Abhängigkeiten: time, paho.mqtt.client
 """
-
 import time
 import logging
 import requests
@@ -22,7 +21,6 @@ broker = "localhost"
 port = 1883
 client_id = "Lampe_Sub"
 topics = ["zigbee/lamp", "zigbee/door"]
-
 # Zigbee
 lamp_id = "1"
 sensor_id = "2"
@@ -34,7 +32,6 @@ logging.basicConfig(level=logging.INFO)  # Logging
 # Sensorstatus abfragen
 def get_sensor_status() -> int:
     url = f"{sensor_api_url}/sensors/{sensor_id}"
-
     try:
         response = requests.get(url)  # Get Request
 
@@ -52,7 +49,6 @@ def get_sensor_status() -> int:
 
 # Publisher
 def publish(client, turn_on: bool) -> None:
-
     state = "on" if turn_on else "off"  # Zustand
     client.publish(topics[0], state)
 
@@ -60,7 +56,6 @@ def publish(client, turn_on: bool) -> None:
 # MQTT Verbindung aufbauen
 def connect_mqtt() -> mqtt.Client:
     obj_client = mqtt.Client()  # Client Objekterstellung
-
     while True:
         try:
             obj_client.connect(broker, port, 60)  # Verbindungsversuch zum Broker
@@ -79,12 +74,18 @@ def main():
         obj_client = connect_mqtt()  # Verbindungsaufbau
         obj_client.loop_start()
 
-        publish(obj_client, turn_on=True) if get_sensor_status() else publish(obj_client, turn_on=False)
-
-        obj_client.loop_forever()  # Endlosschleife
+        while True:
+            # publish(obj_client, turn_on=True) if get_sensor_status() else publish(obj_client, turn_on=False)
+            if get_sensor_status():
+                publish(obj_client, turn_on=True)
+            else:
+                publish(obj_client, turn_on=False)
+            time.sleep(5)  # Wartezeit zwischen den Abfragen
 
     except KeyboardInterrupt:
         print("Program terminated by user.")
+    finally:
+        obj_client.loop_stop()
 
 
 if __name__ == '__main__':
