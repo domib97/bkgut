@@ -6,49 +6,49 @@ Lizenz: GPL-3.0, GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007
         Copyright (C) 2007 Free Software Foundation, Inc. <https://fsf.org/>
         Everyone is permitted to copy and distribute verbatim copies
         of this license document, but changing it is not allowed.
-Sprachen/Protokolle: Python, MQTT, Zigbee, HTTP requests, REST-API
+Sprachen/Protokolle: Python, MQTT, Zigbee, HTTP requests, REST-API, logging
 Datum: 30.05.2024
-Module/Abhängigkeiten: <https://github.com/dresden-elektronik/deconz-rest-plugin>
-"""
+Module/Abhängigkeiten/docs:"""
+# <https://github.com/dresden-elektronik/deconz-rest-plugin>
+# ---
+# <https://dresden-elektronik.github.io/deconz-rest-doc/endpoints/lights/#set-light-state>
+# <https://dresden-elektronik.github.io/deconz-rest-doc/getting_started/#turn-light-onoff>
+# ---
+# e.g 192.168.178.109/api/7B6BEDD305/lights/2
+# "http://{zigbee_gateway_ip}:{port}/api/{your_api_key}"
+
 import time
 import logging
-import paho.mqtt.client as mqtt_alias
 import requests
-# import json //todo: Helligkeit über JSON dimmbar machen
+import paho.mqtt.subscribe as subscribe  # High-Level Lösung ohne eigenen Client
+
+# todo: Helligkeit über JSON dimmbar machen -> import json
 
 # Konstanten
 # MQTT
-broker = "domipi"
+broker = "localhost"
 port = 1883
-topic = "zigbee/lamp"
 client_id = "Lampe_Sub"
+topics = ["zigbee/lamp", "zigbee/door"]
 
 # Zigbee
-# e.g 192.168.178.109/api/7B6BEDD305/lights/2
-# "http://{zigbee_gateway_ip}:{port}/api/{your_api_key}"
 lamp_id = "2"
 deconz_api_url = "http://192.168.178.109/api/7B6BEDD305"
 
 logging.basicConfig(level=logging.INFO)  # Logging
 
 
-# deconz API Lichtkontrolle
+# Lichtkontrolle
 # control_lamp(True) -> Lampe AN
 # control_lamp(False) -> Lampe AUS
 def control_lamp(turn_on: bool) -> None:
 
-    # Zustand <https://dresden-elektronik.github.io/deconz-rest-doc/endpoints/lights/#set-light-state>
-    state = "on" if turn_on else "off"
-
-    # Set state REST-API URL
-    url = f"{deconz_api_url}/lights/{lamp_id}/state"
-
-    # Payload-Data im JSON Format
-    data = {"on": turn_on}
+    state = "on" if turn_on else "off"  # Zustand
+    url = f"{deconz_api_url}/lights/{lamp_id}/state"  # Set state REST-API URL
+    data = {"on": turn_on}   # Payload-Data im JSON Format
 
     try:
-        # Put Request <https://dresden-elektronik.github.io/deconz-rest-doc/getting_started/#turn-light-onoff>
-        response = requests.put(url, json=data)
+        response = requests.put(url, json=data)  # Put Request
 
         if response.status_code == 200:  # HTTP OK
             logging.info(f"Lamp turned {state}")
@@ -58,61 +58,30 @@ def control_lamp(turn_on: bool) -> None:
         logging.error(f"Error controlling the lamp: {e}")
 
 
-# Willkommensnachricht
-def on_connect(client, userdata, flags, rc, properties):
-    if rc == 0:
-        logging.info("Connected to MQTT broker with result code " + str(rc))
-        print("\n#GoodVibesOnly\n:-)\n\nConnected to MQTT Broker!\nWaiting for Data:\n.\n.\n.\n")
-    else:
-        logging.error(f"Connection failed with result code {rc}")
-
-    client.subscribe(topic)  # topic abonnieren wenn Verbindung aufgebaut
-
-
-# Subscriber
-def on_message(client, userdata, message):
+# Callback Funktion
+def on_message(client, userdata, message) -> None:
     try:
-        payload = message.payload.decode()  # Nutzlast dekodieren
+        payload = message.payload.decode("utf-8")  # Nutzlast dekodieren
 
-        if payload.lower() == "on":  # Groß- und Kleinschreibung nicht berücksichtigt
+        if payload.lower() == "on":  # Groß- und Kleinschreibung wird nicht berücksichtigt
             control_lamp(True)  # Lampe AN
 
         elif payload.lower() == "off":
             control_lamp(False)  # Lampe AUS
 
         else:
-            print(f"Unknown command: {payload}")
+            logging.error(f"Unknown command: {payload}")
     except Exception as er:
-        print(f"Error processing message: {er}")
+        logging.error(f"Error processing message: {er}")
 
-
-# MQTT Verbindung aufbauen
-def connect_mqtt() -> mqtt_alias.Client:
-
-    # Client Objekterstellung
-    obj_client = mqtt_alias.Client(mqtt_alias.CallbackAPIVersion.VERSION2)
-
-    obj_client.on_connect = on_connect
-    obj_client.on_message = on_message
-
-    # Verbindungsversuch zum Broker
-    while True:
-        try:
-            obj_client.connect(broker, port, 60)
-            logging.info("Connected to MQTT Broker!")
-            break
-        except Exception as e:
-            logging.error(f"Failed to connect to MQTT Broker: {e}")
-            logging.info("Attempting to reconnect in 5 seconds...")
-            time.sleep(5)
-    return obj_client
- 
 
 # main Funktion
-def main():
+def main() -> None:
     try:
-        obj_client = connect_mqtt()  # Verbindungsaufbau
-        obj_client.loop_forever()  # Endlosschleife
+        print("\nWaiting for Data:\n.\n.\n.\n")
+        subscribe.callback(on_message, topics, hostname=broker, qos=1)  # Subscriber mit Callback Funktion
+    except Exception as e:
+        logging.error(f"Failed to connect to MQTT Broker: {e}")
     except KeyboardInterrupt:
         logging.info("Program terminated by user.")
 
