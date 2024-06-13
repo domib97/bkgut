@@ -49,7 +49,7 @@ def set_led(state):
         GPIO.output(led_pin, GPIO.LOW)
 
 
-# Callback-Funktion, die bei einem Tastendruck aufgerufen wird
+# Callback-Funktion, die bei einem Tastendruck aufgerufen wird um die LED zu steuern
 def button_callback(channel):
     global led_flag
     set_led(not led_flag)  # LED-Zustand umschalten
