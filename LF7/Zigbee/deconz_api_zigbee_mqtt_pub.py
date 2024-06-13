@@ -12,6 +12,7 @@ Module/Abhängigkeiten/docs/sources:"""
 # https://dresden-elektronik.github.io/deconz-rest-doc/endpoints/sensors/#get-all-sensors
 # https://sourceforge.net/p/raspberry-gpio-python/wiki/Inputs/
 import time
+import RPi.GPIO as GPIO
 import logging
 import requests
 import paho.mqtt.client as mqtt  # Low-Level Lösung mit eigenem Client
@@ -26,8 +27,36 @@ topics = ["zigbee/lamp", "zigbee/door"]
 lamp_id = "1"
 sensor_id = "2"
 sensor_api_url = "http://172.17.0.105/api/3C3719D085"
+# GPIO setup
+led_pin = 18
+button_pin = 17
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(led_pin, GPIO.OUT)  # Output-Pin
+GPIO.setup(button_pin, GPIO.IN)  # Input-Pin ohne internen Pull-Up/Down-Widerstand
+# Logging
+logging.basicConfig(level=logging.INFO)
+# Flag, um den Zustand der LED zu steuern
+led_flag = False
 
-logging.basicConfig(level=logging.INFO)  # Logging
+
+# Status der LED setzen
+def set_led(state):
+    global led_flag
+    led_flag = state
+    if led_flag:
+        GPIO.output(led_pin, GPIO.HIGH)
+    else:
+        GPIO.output(led_pin, GPIO.LOW)
+
+
+# Callback-Funktion, die bei einem Tastendruck aufgerufen wird
+def button_callback(channel):
+    global led_flag
+    set_led(not led_flag)  # LED-Zustand umschalten
+
+
+# Event-Detection für den Button einrichten
+GPIO.add_event_detect(button_pin, GPIO.RISING, callback=button_callback, bouncetime=300)
 
 
 # Sensorstatus abfragen
@@ -72,6 +101,7 @@ def connect_mqtt() -> mqtt.Client:
 # main Funktion
 def main():
     try:
+        # time.sleep(0.1)  # Kurze Verzögerung, um CPU-Last zu reduzieren
         obj_client = connect_mqtt()  # Verbindungsaufbau
         obj_client.loop_start()
 
@@ -80,9 +110,10 @@ def main():
             time.sleep(1)
 
     except KeyboardInterrupt:
-        print("Program terminated by user.")
+        print("\nProgram terminated by user.\nStopping MQTT-Client loop\nExecute GPIO.cleanup")
     finally:
         obj_client.loop_stop()
+        GPIO.cleanup()
 
 
 if __name__ == '__main__':
