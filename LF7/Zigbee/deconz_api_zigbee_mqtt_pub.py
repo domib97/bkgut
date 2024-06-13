@@ -6,53 +6,59 @@ Lizenz: GPL-3.0, GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007
         Copyright (C) 2007 Free Software Foundation, Inc. <https://fsf.org/>
         Everyone is permitted to copy and distribute verbatim copies
         of this license document, but changing it is not allowed.
-Sprachen/Protokolle: Python, MQTT, Zigbee, HTTP requests, REST-API
+Sprachen/Protokolle: Python, MQTT
 Datum: 30.05.2024
-Module/Abhängigkeiten: <https://github.com/dresden-elektronik/deconz-rest-plugin>
+Module/Abhängigkeiten: time, paho.mqtt.client
 """
 import time
-import paho.mqtt.client as mqtt_alias
+import logging
+import requests
+import paho.mqtt.client as mqtt
 
-# MQTT-Config
-broker = "domipi"
+# Konstanten
+# MQTT
+broker = "localhost"
 port = 1883
-client_id = "Lampe_Pub"
-topics = ["zigbee/lamp", "greenhouse/1/hum"]
+client_id = "Lampe_Sub"
+topics = ["zigbee/lamp", "zigbee/door"]
+# Zigbee
+lamp_id = "1"
+sensor_id = "2"
+sensor_api_url = "http://172.17.0.105/api/3C3719D085"
 
-# //todo topics = [("zigbee/lamp", 0), ("zigbee/door", 0)]
+logging.basicConfig(level=logging.INFO)  # Logging
+
+
+# Sensorstatus abfragen
+def get_sensor_status() -> int:
+    url = f"{sensor_api_url}/sensors/{sensor_id}"
+    try:
+        response = requests.get(url)  # Get Request
+
+        if response.status_code == 200:  # HTTP OK
+            sensor_data = response.json()
+            is_open = sensor_data['state']['open']
+            status = "open" if is_open else "closed"
+            logging.info(f"Sensor status: {status}")
+        else:
+            logging.error(f"Failed to get sensor status: {response.text}")  # HTTP ERROR
+    except Exception as e:
+        logging.error(f"Error getting sensor status: {e}")
+    return is_open
 
 
 # Publisher
-def publish(client, turn_on: bool) -> int:
-    while True:
-        try:
-            const_on: str = 'on'
-            const_off: str = 'off'
-
-            state = "on" if turn_on else "off"
-
-            if state == "on":
-                flag = True
-                client.publish(topics[0], const_on)
-            elif state == "off":
-                flag = False
-                client.publish(topics[0], const_off)
-            else:
-                return 0
-        finally:
-            return 0
+def publish(client, turn_on: bool) -> None:
+    state = "on" if turn_on else "off"  # Zustand
+    client.publish(topics[0], state)
 
 
 # MQTT Verbindung aufbauen
-def connect_mqtt() -> mqtt_alias.Client:
-
-    # Client Objekterstellung
-    obj_client = mqtt_alias.Client(mqtt_alias.CallbackAPIVersion.VERSION2)
-
-    # Verbindungsversuch zum Broker
+def connect_mqtt() -> mqtt.Client:
+    obj_client = mqtt.Client()  # Client Objekterstellung
     while True:
         try:
-            obj_client.connect(broker, port, 60)
+            obj_client.connect(broker, port, 60)  # Verbindungsversuch zum Broker
             print("Connected to MQTT Broker!\nSending Data:\n")
             break
         except Exception as e:
@@ -66,29 +72,16 @@ def connect_mqtt() -> mqtt_alias.Client:
 def main():
     try:
         obj_client = connect_mqtt()  # Verbindungsaufbau
+        obj_client.loop_start()
 
-        for x in range(1, 4, 1):
-            print(str(x) + "\tSekunden...")
+        while True:
+            publish(obj_client, turn_on=True) if get_sensor_status() else publish(obj_client, turn_on=False)
             time.sleep(1)
-
-        def on_off_on():
-            time.sleep(0.5)
-            publish(obj_client, turn_on=True)
-            print("Turned on")
-            time.sleep(1.5)
-            publish(obj_client, turn_on=False)
-            print("Turned off")
-            time.sleep(1.5)
-            publish(obj_client, turn_on=True)
-            print("Turned on")
-
-        on_off_on()
-
-        time.sleep(3)
-        obj_client.loop_forever()  # Endlosschleife
 
     except KeyboardInterrupt:
         print("Program terminated by user.")
+    finally:
+        obj_client.loop_stop()
 
 
 if __name__ == '__main__':
