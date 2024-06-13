@@ -6,14 +6,15 @@ Lizenz: GPL-3.0, GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007
         Copyright (C) 2007 Free Software Foundation, Inc. <https://fsf.org/>
         Everyone is permitted to copy and distribute verbatim copies
         of this license document, but changing it is not allowed.
-Sprachen/Protokolle: Python, MQTT
+Sprachen/Protokolle:  Python, MQTT, Zigbee, HTTP requests, REST-API, logging
 Datum: 30.05.2024
-Module/Abhängigkeiten: time, paho.mqtt.client
-"""
+Module/Abhängigkeiten/docs/sources:"""
+# https://dresden-elektronik.github.io/deconz-rest-doc/endpoints/sensors/#get-all-sensors
+# https://sourceforge.net/p/raspberry-gpio-python/wiki/Inputs/
 import time
 import logging
 import requests
-import paho.mqtt.client as mqtt
+import paho.mqtt.client as mqtt  # Low-Level Lösung mit eigenem Client
 
 # Konstanten
 # MQTT

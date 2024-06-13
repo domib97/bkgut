@@ -8,19 +8,15 @@ Lizenz: GPL-3.0, GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007
         of this license document, but changing it is not allowed.
 Sprachen/Protokolle: Python, MQTT, Zigbee, HTTP requests, REST-API, logging
 Datum: 30.05.2024
-Module/Abhängigkeiten/docs:"""
+Module/Abhängigkeiten/docs/sources:"""
 # <https://github.com/dresden-elektronik/deconz-rest-plugin>
-# ---
 # <https://dresden-elektronik.github.io/deconz-rest-doc/endpoints/lights/#set-light-state>
 # <https://dresden-elektronik.github.io/deconz-rest-doc/getting_started/#turn-light-onoff>
-# ---
-# e.g 192.168.178.109/api/7B6BEDD305/lights/2
-# "http://{zigbee_gateway_ip}:{port}/api/{your_api_key}"
+# e.g 192.168.178.109/api/7B6BEDD305/lights/2 -> "http://{zigbee_gateway_ip}:{port}/api/{your_api_key}"
 
-import time
 import logging
 import requests
-import paho.mqtt.subscribe as subscribe  # High-Level Lösung ohne eigenen Client
+import paho.mqtt.subscribe as subscribe  # High-Level Lösung ohne eigenem Client
 
 # todo: Helligkeit über JSON dimmbar machen -> import json
 
@@ -42,9 +38,8 @@ logging.basicConfig(level=logging.INFO)  # Logging
 # control_lamp(True) -> Lampe AN
 # control_lamp(False) -> Lampe AUS
 def control_lamp(turn_on: bool) -> None:
-
     state = "on" if turn_on else "off"  # Zustand
-    url = f"{deconz_api_url}/lights/{lamp_id}/state"  # Set state REST-API URL
+    url = f"{deconz_api_url}/lights/{lamp_id}/state"  # Set state URL
     data = {"on": turn_on}   # Payload-Data im JSON Format
 
     try:
