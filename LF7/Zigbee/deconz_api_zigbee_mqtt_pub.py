@@ -40,7 +40,7 @@ led_flag = False
 
 
 # Status der LED setzen
-def set_led(state):
+def set_led(state) -> None:
     global led_flag
     led_flag = state
     if led_flag:
@@ -49,8 +49,8 @@ def set_led(state):
         GPIO.output(led_pin, GPIO.LOW)
 
 
-# Callback-Funktion, die bei einem Tastendruck aufgerufen wird um die LED zu steuern
-def button_callback(channel):
+# Callback-Funktion, die bei einem Tastendruck aufgerufen wird, um die LED zu steuern
+def button_callback(channel) -> None:
     global led_flag
     set_led(not led_flag)  # LED-Zustand umschalten
 
@@ -99,7 +99,7 @@ def connect_mqtt() -> mqtt.Client:
 
 
 # main Funktion
-def main():
+def main() -> None:
     try:
         # time.sleep(0.1)  # Kurze Verzögerung, um CPU-Last zu reduzieren
         obj_client = connect_mqtt()  # Verbindungsaufbau
