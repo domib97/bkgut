@@ -11,6 +11,7 @@ Datum: 30.05.2024
 Module/Abhängigkeiten/docs/sources:"""
 # https://dresden-elektronik.github.io/deconz-rest-doc/endpoints/sensors/#get-all-sensors
 # https://sourceforge.net/p/raspberry-gpio-python/wiki/Inputs/
+
 import time
 import RPi.GPIO as GPIO
 import logging
@@ -26,12 +27,13 @@ topics = ["zigbee/lamp", "zigbee/door"]
 # Zigbee
 lamp_id = "1"
 sensor_id = "2"
+# sensor_api_url = "http://172.17.0.105/api/3C3719D085"
 sensor_api_url = "http://172.17.0.105/api/3C3719D085"
 # GPIO setup
-led_pin = 18
+led_pins = [18, 19, 20, 21, 22]
 button_pin = 17
 GPIO.setmode(GPIO.BCM)
-GPIO.setup(led_pin, GPIO.OUT)  # Output-Pin
+GPIO.setup(led_pins, GPIO.OUT)  # Output-Pins
 GPIO.setup(button_pin, GPIO.IN)  # Input-Pin ohne internen Pull-Up/Down-Widerstand
 # Logging
 logging.basicConfig(level=logging.INFO)
@@ -44,9 +46,9 @@ def set_led(state) -> None:
     global led_flag
     led_flag = state
     if led_flag:
-        GPIO.output(led_pin, GPIO.HIGH)
+        GPIO.output(led_pins, GPIO.HIGH)
     else:
-        GPIO.output(led_pin, GPIO.LOW)
+        GPIO.output(led_pins, GPIO.LOW)
 
 
 # Callback-Funktion, die bei einem Tastendruck aufgerufen wird, um die LED zu steuern

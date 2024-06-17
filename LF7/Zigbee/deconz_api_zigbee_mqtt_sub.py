@@ -29,6 +29,7 @@ topics = ["zigbee/lamp", "zigbee/door"]
 
 # Zigbee
 lamp_id = "2"
+# deconz_api_url = "http://192.168.178.109/api/7B6BEDD305"
 deconz_api_url = "http://192.168.178.109/api/7B6BEDD305"
 
 logging.basicConfig(level=logging.INFO)  # Logging
